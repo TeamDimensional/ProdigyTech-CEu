@@ -109,7 +109,7 @@ public class TileAeroheaterMagmatic extends TileEntity implements ITickable {
 
 		@Override
 		protected void resetRaiseClock() {
-			//10 seconds to reach 80 °C (when Draft Furnace starts working)
+			//10 seconds to reach 80 C (when Draft Furnace starts working)
 			temperatureClock = 4;
 		}
 

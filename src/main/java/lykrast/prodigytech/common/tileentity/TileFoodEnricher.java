@@ -18,8 +18,8 @@ public class TileFoodEnricher extends TileHotAirMachineSimple {
 	
 	public static int getProcessTime(ItemStack stack) {
 		//Assumes it is a valid input
-		//Base formula is ((improved food restored + improved saturation restored) - (food restored + saturation restored))²
-		//Simplified with wolfram alpha to (2*(food * saturation ratio increase + saturation ratio * food increase + food increase * saturation ratio increase) + food increase)²
+		//Base formula is ((improved food restored + improved saturation restored) - (food restored + saturation restored))^2
+		//Simplified with wolfram alpha to (2*(food * saturation ratio increase + saturation ratio * food increase + food increase * saturation ratio increase) + food increase)^2
 		ItemFood food = (ItemFood) stack.getItem();
 		int value = food.getHealAmount(stack), valueInc = Config.foodEnricherFoodIncrease;
 		float saturation = food.getSaturationModifier(stack), saturationInc = Config.foodEnricherSaturationIncrease;

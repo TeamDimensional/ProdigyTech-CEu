@@ -182,15 +182,15 @@ public class TileAeroheaterEnergion extends TileMachineInventory implements ITic
 
 		@Override
 		protected void resetRaiseClock() {
-			//3.5 seconds to reach 100 °C
+			//3.5 seconds to reach 100 C
 			if (temperature < 100) temperatureClock = 1;
-			//5 more seconds to reach 125 °C
+			//5 more seconds to reach 125 C
 			else if (temperature < 125) temperatureClock = 4;
-			//14 more seconds to reach 160 °C
+			//14 more seconds to reach 160 C
 			else if (temperature < 160) temperatureClock = 8;
-			//26 more seconds to reach 200 °C
+			//26 more seconds to reach 200 C
 			else if (temperature < 200) temperatureClock = 13;
-			//60 more seconds to reach 250 °C
+			//60 more seconds to reach 250 C
 			else temperatureClock = 24;
 		}
 
