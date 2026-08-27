@@ -1,9 +1,6 @@
 package lykrast.prodigytech.common.compat.jei;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import lykrast.prodigytech.common.init.ModItems;
 import lykrast.prodigytech.common.util.Config;
@@ -11,10 +8,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.oredict.OreDictionary;
 
 public class IncineratorWrapper implements IRecipeWrapper {
 	private ItemStack output;
@@ -33,13 +27,6 @@ public class IncineratorWrapper implements IRecipeWrapper {
 
 	@Override
 	public void getIngredients(IIngredients ingredients) {
-		List<ItemStack> items = new ArrayList<>();
-		
-		for (Item i : ForgeRegistries.ITEMS)
-		{
-			items.add(new ItemStack(i, 1, OreDictionary.WILDCARD_VALUE));
-		}
-		ingredients.setInputLists(VanillaTypes.ITEM, Collections.singletonList(items));
 		ingredients.setOutput(VanillaTypes.ITEM, output);
 	}
 	

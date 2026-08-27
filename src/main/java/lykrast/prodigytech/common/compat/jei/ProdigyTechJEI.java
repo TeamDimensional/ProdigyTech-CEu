@@ -10,6 +10,9 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.gui.IDrawableStatic;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import net.minecraft.item.ItemStack;
@@ -18,6 +21,8 @@ import net.minecraft.util.ResourceLocation;
 @JEIPlugin
 public class ProdigyTechJEI implements IModPlugin {
 	public static final ResourceLocation GUI = ProdigyTech.resource("textures/gui/jei.png");
+	public static IIngredientHelper<ItemStack> stackHelper;
+	public static IIngredientRenderer<ItemStack> stackRenderer;
 	
 	public static IDrawableStatic getDefaultProcessArrow(IGuiHelper guiHelper) {
 		return guiHelper.createDrawable(GUI, 104, 36, 24, 17);
@@ -26,6 +31,9 @@ public class ProdigyTechJEI implements IModPlugin {
 	@Override
 	public void register(IModRegistry registry)
 	{
+		stackHelper = registry.getIngredientRegistry().getIngredientHelper(VanillaTypes.ITEM);
+		stackRenderer = registry.getIngredientRegistry().getIngredientRenderer(VanillaTypes.ITEM);
+
 		//Recipes
 		ExplosionFurnaceCategory.registerRecipes(registry);
 		ExplosionFurnaceExplosiveCategory.registerRecipes(registry);
