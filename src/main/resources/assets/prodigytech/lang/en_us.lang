@@ -214,10 +214,11 @@ container.prodigytech.temperature.output=§6Output Air Temperature:§r %d°C
 container.prodigytech.solderer.gold.blocks=%d Blocks
 container.prodigytech.solderer.gold.ingots=%d Ingots
 container.prodigytech.solderer.gold.nuggets=%d Nuggets
-container.prodigytech.solderer.gold.empty=Empty
 
 container.prodigytech.atomic_reshaper.primordium.amount=%d Primordium units
-container.prodigytech.atomic_reshaper.primordium.empty=Empty
+container.prodigytech.infusion.provides=Provided amount: %d
+
+container.prodigytech.infusion.empty=Empty
 
 container.prodigytech.linear_extractor=Linear Extractor
 container.prodigytech.funnelling_extractor=Funnelling Extractor

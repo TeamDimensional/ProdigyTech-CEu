@@ -4,6 +4,8 @@ import lykrast.prodigytech.common.block.BlockMachineActiveable;
 import lykrast.prodigytech.common.capability.CapabilityHotAir;
 import lykrast.prodigytech.common.capability.HotAirMachine;
 import lykrast.prodigytech.common.recipe.SoldererManager;
+import lykrast.prodigytech.common.recipe.Infusion;
+import lykrast.prodigytech.common.recipe.Infusion.InfusionState;
 import lykrast.prodigytech.common.recipe.SoldererManager.SoldererRecipe;
 import lykrast.prodigytech.common.util.Config;
 import lykrast.prodigytech.common.util.ProdigyInventoryHandler;
@@ -24,7 +26,9 @@ public class TileSolderer extends TileMachineInventory implements ITickable, IPr
 	private int processTimeMax;
 	private HotAirMachine hotAir;
 	/** The amount of gold in the machine */
-	private int gold;
+	private InfusionState state;
+
+	public static final String MACHINE_NAME = "solderer";
 
 	//Slots :
 	//0 Pattern
@@ -34,6 +38,7 @@ public class TileSolderer extends TileMachineInventory implements ITickable, IPr
 	//4 Output
 	public TileSolderer() {
 		super(5);
+		state = new InfusionState(Config.soldererCapacity);
 		hotAir = new HotAirMachine(this, 0.75F);
 	}
 
@@ -45,26 +50,17 @@ public class TileSolderer extends TileMachineInventory implements ITickable, IPr
 	@Override
 	public boolean isItemValidForSlot(int index, ItemStack stack) {
 		if (index == 0) return SoldererManager.isValidPattern(stack);
-		else if (index == 1) return SoldererManager.getGoldAmount(stack) > 0;
+		else if (index == 1) return state.validInput(Infusion.getInfusionOutput(MACHINE_NAME, stack));
 		else if (index == 2) return SoldererManager.isValidAdditive(stack);
 		else if (index == 3) return SoldererManager.isPlate(stack);
 		else return false;
 	}
-	
-	private int canSmeltGold()
-	{
-		if (getStackInSlot(1).isEmpty() || hotAir.getInAirTemperature() < 125) return 0;
-		
-		int amount = SoldererManager.getGoldAmount(getStackInSlot(1));
-		if (amount > (Config.soldererMaxGold - gold)) return 0;
-		else return amount;
-	}
 
 	private SoldererRecipe cachedRecipe;
     private void updateCachedRecipe() {
-    	if (cachedRecipe == null) cachedRecipe = SoldererManager.findRecipe(getStackInSlot(0), getStackInSlot(2), gold);
-    	else if (!cachedRecipe.isValidInput(getStackInSlot(0), getStackInSlot(2), gold)) {
-    		cachedRecipe = SoldererManager.findRecipe(getStackInSlot(0), getStackInSlot(2), gold);
+    	if (cachedRecipe == null) cachedRecipe = SoldererManager.findRecipe(getStackInSlot(0), getStackInSlot(2), state);
+    	else if (!cachedRecipe.isValidInput(getStackInSlot(0), getStackInSlot(2), state)) {
+    		cachedRecipe = SoldererManager.findRecipe(getStackInSlot(0), getStackInSlot(2), state);
     		//Recipe became invalid, restart the process
 			processTimeMax = 0;
 			processTime = 0;
@@ -115,11 +111,9 @@ public class TileSolderer extends TileMachineInventory implements ITickable, IPr
         {
         	hotAir.updateInTemperature(world, pos);
 
-    		int goldAmount = canSmeltGold();
-    		if (goldAmount > 0)
-    		{
-    			gold += goldAmount;
-    			getStackInSlot(1).shrink(1);
+			if (state.add(Infusion.getInfusionOutput(MACHINE_NAME, getStackInSlot(0)), false)) {
+    			getStackInSlot(0).shrink(1);
+				flag1 = true;
     		}
     		
         	if (canProcess())
@@ -184,7 +178,7 @@ public class TileSolderer extends TileMachineInventory implements ITickable, IPr
 
         if (cachedRecipe.requiresAdditive()) getStackInSlot(2).shrink(cachedRecipe.getAdditive().getCount());
         getStackInSlot(3).shrink(1);
-        gold -= cachedRecipe.getGoldAmount();
+		state.subtract(cachedRecipe.getInfusion(), false);
 	}
 	
 	private int getProcessSpeed()
@@ -234,7 +228,9 @@ public class TileSolderer extends TileMachineInventory implements ITickable, IPr
 	        case 3:
 	            return hotAir.getOutAirTemperature();
 	        case 4:
-	            return gold;
+	            return state.getCount();
+	        case 5:
+	            return state.getInfusionId();
 	        default:
 	            return 0;
 	    }
@@ -257,14 +253,17 @@ public class TileSolderer extends TileMachineInventory implements ITickable, IPr
 	            hotAir.setOutAirTemperature(value);
 	            break;
 	        case 4:
-	            gold = value;
+	            state.setCount(value);
+	            break;
+	        case 5:
+	            state.setInfusion(value);
 	            break;
 	    }
 	}
 
 	@Override
 	public int getFieldCount() {
-	    return 5;
+	    return 6;
 	}
 
 	@Override
@@ -297,7 +296,16 @@ public class TileSolderer extends TileMachineInventory implements ITickable, IPr
         processTime = compound.getInteger("ProcessTime");
         processTimeMax = compound.getInteger("ProcessTimeMax");
         hotAir.deserializeNBT(compound.getCompoundTag("HotAir"));
-        gold = compound.getInteger("Gold");
+        int gold = compound.getInteger("Gold");
+		int infusion = compound.getInteger("Infusion");
+		String infusionName = null;
+		if (infusion == 0 && gold > 0) {
+			infusionName = "gold";
+		} else if (infusion != 0) {
+			infusionName = Infusion.INFUSIONS_BY_ID.get(infusion);
+		}
+		state.setInfusion(infusionName);
+		if (infusionName != null) state.setCount(gold);
     }
 
     @Override
@@ -307,9 +315,14 @@ public class TileSolderer extends TileMachineInventory implements ITickable, IPr
         compound.setInteger("ProcessTime", processTime);
         compound.setInteger("ProcessTimeMax", processTimeMax);
         compound.setTag("HotAir", hotAir.serializeNBT());
-        compound.setInteger("Gold", gold);
+        compound.setInteger("Gold", state.getCount());
+        compound.setInteger("Infusion", state.getInfusionId());
 
         return compound;
     }
+
+	public InfusionState getInfusionState() {
+		return state;
+	}
 
 }

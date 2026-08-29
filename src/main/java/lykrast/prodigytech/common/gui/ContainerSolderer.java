@@ -1,5 +1,6 @@
 package lykrast.prodigytech.common.gui;
 
+import lykrast.prodigytech.common.recipe.Infusion;
 import lykrast.prodigytech.common.recipe.SoldererManager;
 import lykrast.prodigytech.common.tileentity.TileSolderer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -41,7 +42,7 @@ public class ContainerSolderer extends ContainerMachine<TileSolderer> {
             @Override
 			public boolean isItemValid(ItemStack stack)
             {
-                return SoldererManager.getGoldAmount(stack) > 0;
+            	return tile.getInfusionState().validInput(Infusion.getInfusionOutput(TileSolderer.MACHINE_NAME, stack));
             }
     	});
 		//Additive
@@ -163,7 +164,7 @@ public class ContainerSolderer extends ContainerMachine<TileSolderer> {
                     }
                 }
             	//Gold
-            	if (SoldererManager.getGoldAmount(itemstack1) > 0)
+            	if (tile.getInfusionState().validInput(Infusion.getInfusionOutput(TileSolderer.MACHINE_NAME, itemstack1)))
                 {
                     if (!this.mergeItemStack(itemstack1, 1, 2, false))
                     {

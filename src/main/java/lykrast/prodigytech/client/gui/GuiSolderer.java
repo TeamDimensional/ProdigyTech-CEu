@@ -1,8 +1,5 @@
 package lykrast.prodigytech.client.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.ImmutableList;
 
 import lykrast.prodigytech.common.gui.ContainerSolderer;
@@ -71,9 +68,10 @@ public class GuiSolderer extends GuiInventory {
 	    l = getFieldScaled(3, 17, 30, 125);
 	    this.drawTexturedModalRect(guiLeft + 82, guiTop + 16 + (17 - l), 176, 17 + (17 - l), 18, l + 1);
 	
-	    //Gold
-	    l = getFieldScaled(4, 52, 0, Config.soldererMaxGold);
-	    this.drawTexturedModalRect(guiLeft + 49, guiTop + 17 + (52 - l), 176, 35 + (52 - l), 4, l);
+	    //Primordium
+		GuiInfusion.render(
+			this, tile.getInfusionState().getInfusionId(),
+			tile.getInfusionState().getCount(), Config.soldererCapacity, guiLeft + 49, guiTop + 17);
 	}
 
 	/**
@@ -114,35 +112,8 @@ public class GuiSolderer extends GuiInventory {
 		}
         else if (x >= guiLeft + 49 && x < guiLeft + 53 && y >= guiTop + 19 && y < guiTop + 70)
         {
-            this.drawHoveringText(getGoldString(tile.getField(4)), x, y, fontRenderer);
+            this.drawHoveringText(ImmutableList.of(tile.getInfusionState().localize()), x, y, fontRenderer);
         }
-	}
-	
-	private List<String> getGoldString(int amount)
-	{
-		List<String> list = new ArrayList<>();
-		
-		int blocks = amount / 81;
-		if (blocks > 0)
-		{
-			list.add(I18n.format(BLOCKS, blocks));
-			amount %= 81;
-		}
-		
-		int ingots = amount / 9;
-		if (ingots > 0)
-		{
-			list.add(I18n.format(INGOTS, ingots));
-			amount %= 9;
-		}
-		
-		if (amount > 0)
-		{
-			list.add(I18n.format(NUGGETS, amount));
-		}
-		
-		if (list.isEmpty()) list.add(I18n.format(EMPTY));
-		return list;
 	}
 
 }

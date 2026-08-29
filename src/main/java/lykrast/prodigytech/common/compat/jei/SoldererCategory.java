@@ -34,6 +34,7 @@ public class SoldererCategory extends ProdigyCategory<SoldererWrapper> {
 		guiItemStacks.init(4, false, 96, 18);
 
 		guiItemStacks.set(ingredients);
+		guiItemStacks.addTooltipCallback(recipeWrapper);
 	}
 
 	public static void registerRecipes(IModRegistry registry)

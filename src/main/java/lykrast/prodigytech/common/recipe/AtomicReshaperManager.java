@@ -10,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import lykrast.prodigytech.common.init.ModBlocks;
 import lykrast.prodigytech.common.init.ModItems;
 import lykrast.prodigytech.common.recipe.AtomicReshaperManager.AtomicReshaperRecipe;
+import lykrast.prodigytech.common.recipe.Infusion.InfusionCost;
 import lykrast.prodigytech.common.util.Config;
 import lykrast.prodigytech.common.util.RecipeUtil;
 import net.minecraft.init.Blocks;
@@ -21,19 +22,29 @@ public class AtomicReshaperManager extends SimpleRecipeManagerAbstract<AtomicRes
 	public static final AtomicReshaperManager INSTANCE = new AtomicReshaperManager();
 	private AtomicReshaperManager() {}
 
+	@Deprecated
 	public AtomicReshaperRecipe addRecipe(ItemStack input, int time, int primordium, Object... outputs) {
 		return addRecipe(new AtomicReshaperRecipe(input, time, primordium, outputs));
 	}
 	
+	@Deprecated
 	public AtomicReshaperRecipe addRecipe(String input, int time, int primordium, Object... outputs) {
+		return addRecipe(new AtomicReshaperRecipe(input, time, primordium, outputs));
+	}
+
+	public AtomicReshaperRecipe addRecipe(ItemStack input, int time, InfusionCost primordium, Object... outputs) {
+		return addRecipe(new AtomicReshaperRecipe(input, time, primordium, outputs));
+	}
+
+	public AtomicReshaperRecipe addRecipe(String input, int time, InfusionCost primordium, Object... outputs) {
 		return addRecipe(new AtomicReshaperRecipe(input, time, primordium, outputs));
 	}
 	
 	@Override
 	public void init() {
-		addRecipe("treeSapling", Config.atomicReshaperProcessTime, 50, new ItemStack(ModBlocks.zorraSapling));
+		addRecipe("treeSapling", Config.atomicReshaperProcessTime, new InfusionCost("primordium", 50), new ItemStack(ModBlocks.zorraSapling));
 		//Using Botania's Orechid weights
-		addRecipe("stone", Config.atomicReshaperProcessTime, 20, createOreDictOutputs(
+		addRecipe("stone", Config.atomicReshaperProcessTime, new InfusionCost("primordium", 20), createOreDictOutputs(
 				"oreAluminum", 3940,
 				"oreAmber", 2075,
 				"oreApatite", 1595,
@@ -60,7 +71,7 @@ public class AtomicReshaperManager extends SimpleRecipeManagerAbstract<AtomicRes
 				"oreOsmium", 6915,
 				"oreQuartzBlack", 5535
 				));
-		addRecipe("cobblestone", Config.atomicReshaperProcessTime, 4, createOreDictOutputs(
+		addRecipe("cobblestone", Config.atomicReshaperProcessTime, new InfusionCost("primordium", 4), createOreDictOutputs(
 				"stoneGranite", 1,
 				"stoneDiorite", 1,
 				"stoneAndesite", 1,
@@ -70,32 +81,11 @@ public class AtomicReshaperManager extends SimpleRecipeManagerAbstract<AtomicRes
 				"slate", 1
 				));
 		
-		//Mystery Treats
-//		addRecipe(new AtomicReshaperRecipe(new ItemStack(Items.SUGAR), Config.atomicReshaperProcessTime, 5, new ItemStack(ModItems.mysteryTreat)) {
-//
-//			@Override
-//			public boolean isSingleOutput() {
-//				return false;
-//			}
-//			
-//			@Override
-//			public List<ItemStack> getOutputList() {
-//				NonNullList<ItemStack> list = NonNullList.create();
-//				ModItems.mysteryTreat.getSubItems(ModItems.mysteryTreat.getCreativeTab(), list);
-//				return list;
-//			}
-//			
-//			@Override
-//			public ItemStack getRandomOutput(Random rand) {
-//		    	return ItemMysteryTreat.createRandom(rand);
-//			}
-//		});
-		
-		addRecipe("sand", Config.atomicReshaperProcessTime, 1, new ItemStack(Blocks.DIRT));
-		addRecipe("dirt", Config.atomicReshaperProcessTime, 3, new ItemStack(Blocks.CLAY));
-		addRecipe("paper", Config.atomicReshaperProcessTime, 2, new ItemStack(ModItems.circuitPlate));
-		addRecipe("dustAsh", Config.atomicReshaperProcessTime, 2, new ItemStack(Items.GUNPOWDER));
-		addRecipe(new ItemStack(ModItems.infernoCrystal), Config.atomicReshaperProcessTime, 5, new ItemStack(ModItems.aeternusCrystal));
+		addRecipe("sand", Config.atomicReshaperProcessTime, new InfusionCost("primordium", 1), new ItemStack(Blocks.DIRT));
+		addRecipe("dirt", Config.atomicReshaperProcessTime, new InfusionCost("primordium", 3), new ItemStack(Blocks.CLAY));
+		addRecipe("paper", Config.atomicReshaperProcessTime, new InfusionCost("primordium", 2), new ItemStack(ModItems.circuitPlate));
+		addRecipe("dustAsh", Config.atomicReshaperProcessTime, new InfusionCost("primordium", 2), new ItemStack(Items.GUNPOWDER));
+		addRecipe(new ItemStack(ModItems.infernoCrystal), Config.atomicReshaperProcessTime, new InfusionCost("primordium", 5), new ItemStack(ModItems.aeternusCrystal));
 	}
 	
 	private static Object[] createOreDictOutputs(Object... outputs) {
@@ -120,10 +110,11 @@ public class AtomicReshaperManager extends SimpleRecipeManagerAbstract<AtomicRes
 		protected final ItemStack input;
 		protected final String oreInput;
 		protected final List<Pair<ItemStack, Integer>> outputs;
-		protected final int time, primordium;
+		protected final int time;
+		protected final InfusionCost primordium;
 		private int totalWeight;
 		
-		public AtomicReshaperRecipe(ItemStack input, int time, int primordium, Object... outputs) {
+		public AtomicReshaperRecipe(ItemStack input, int time, InfusionCost primordium, Object... outputs) {
 			this.input = input;
 			oreInput = null;
 			this.time = time;
@@ -132,8 +123,12 @@ public class AtomicReshaperManager extends SimpleRecipeManagerAbstract<AtomicRes
 			processOutputs(outputs);
 			id = NEXTID++;
 		}
+
+		public AtomicReshaperRecipe(ItemStack input, int time, int primordium, Object... outputs) {
+			this(input, time, new InfusionCost("primordium", primordium), outputs);
+		}
 		
-		public AtomicReshaperRecipe(String input, int time, int primordium, Object... outputs) {
+		public AtomicReshaperRecipe(String input, int time, InfusionCost primordium, Object... outputs) {
 			this.input = ItemStack.EMPTY;
 			oreInput = input;
 			this.time = time;
@@ -141,6 +136,10 @@ public class AtomicReshaperManager extends SimpleRecipeManagerAbstract<AtomicRes
 			this.outputs = new ArrayList<>();
 			processOutputs(outputs);
 			id = NEXTID++;
+		}
+		
+		public AtomicReshaperRecipe(String input, int time, int primordium, Object... outputs) {
+			this(input, time, new InfusionCost("primordium", primordium), outputs);
 		}
 		
 		private void processOutputs(Object[] args) {
@@ -189,7 +188,12 @@ public class AtomicReshaperManager extends SimpleRecipeManagerAbstract<AtomicRes
 			return time * 10;
 		}
 		
+		@Deprecated
 		public int getPrimordiumAmount() {
+			return primordium.amount;
+		}
+		
+		public InfusionCost getCost() {
 			return primordium;
 		}
 		

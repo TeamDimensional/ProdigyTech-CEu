@@ -5,9 +5,10 @@ import java.util.Collections;
 import java.util.List;
 
 import lykrast.prodigytech.client.gui.GuiAtomicReshaper;
-import lykrast.prodigytech.common.init.ModItems;
+import lykrast.prodigytech.client.gui.GuiInfusion;
+import lykrast.prodigytech.common.recipe.Infusion;
 import lykrast.prodigytech.common.recipe.AtomicReshaperManager.AtomicReshaperRecipe;
-import lykrast.prodigytech.common.util.Config;
+import lykrast.prodigytech.common.recipe.Infusion.InfusionCost;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
@@ -29,8 +30,9 @@ public class AtomicReshaperWrapper implements IRecipeWrapper, ITooltipCallback<I
 	private List<List<ItemStack>> out;
 	private final IDrawableAnimated arrow;
 	private final IDrawable primordiumGauge;
-	private int primordiumAmount, primordiumScale, totalWeight;
+	private int totalWeight;
 	private int[] weights;
+	private InfusionCost cost;
 	
 	public AtomicReshaperWrapper(AtomicReshaperRecipe recipe, IGuiHelper guiHelper)
 	{
@@ -49,22 +51,17 @@ public class AtomicReshaperWrapper implements IRecipeWrapper, ITooltipCallback<I
 		
 		weights = recipe.getWeights();
 		totalWeight = recipe.getTotalWeight();
-		
-		primordiumAmount = recipe.getPrimordiumAmount();
-		
+		cost = recipe.getCost();
+
 		arrow = guiHelper.createAnimatedDrawable(guiHelper.createDrawable(GuiAtomicReshaper.GUI, 176, 0, 48, 17), recipe.getTimeTicks(), IDrawableAnimated.StartDirection.LEFT, false);
-		
-		primordiumScale = primordiumAmount * 52 / (Config.atomicReshaperMaxPrimordium * 100);
-		primordiumGauge = guiHelper.createDrawable(GuiAtomicReshaper.GUI, 176, 35 + (52 - primordiumScale), 4, primordiumScale);
+
+		primordiumGauge = GuiInfusion.makeJEIDrawable(guiHelper, recipe.getCost().getInfusionId(), recipe.getCost().amount, 100);
 	}
 
 	@Override
 	public void getIngredients(IIngredients ingredients) {
 		List<List<ItemStack>> inputs = new ArrayList<>();
-		
-		int primordiumCount = primordiumAmount % 100 == 0 ? primordiumAmount / 100 : (primordiumAmount / 100) + 1;
-		inputs.add(Collections.singletonList(new ItemStack(ModItems.primordium, primordiumCount)));
-		
+		inputs.add(cost.getRepresentatives());
 		inputs.add(in);
 		
 		ingredients.setInputLists(VanillaTypes.ITEM, inputs);
@@ -74,7 +71,7 @@ public class AtomicReshaperWrapper implements IRecipeWrapper, ITooltipCallback<I
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 		arrow.draw(minecraft, 60, 19);
-		primordiumGauge.draw(minecraft, 30, 1 + (52 - primordiumScale));
+		primordiumGauge.draw(minecraft, 30, 1 + (GuiInfusion.MAX_HEIGHT - primordiumGauge.getHeight()));
 	}
 	
 	@Override
@@ -83,7 +80,7 @@ public class AtomicReshaperWrapper implements IRecipeWrapper, ITooltipCallback<I
 		if (mouseX >= 30 && mouseX <= 34)
 		{
 			List<String> list = new ArrayList<>();
-			list.add(I18n.format(AMOUNT, primordiumAmount));
+			list.add(cost.localize());
 			return list;
 		}
 		else return Collections.emptyList();
@@ -95,6 +92,9 @@ public class AtomicReshaperWrapper implements IRecipeWrapper, ITooltipCallback<I
 			int chance = (weights[out.get(0).indexOf(ingredient)] * 100) / totalWeight;
 			if (chance == 0) tooltip.add(I18n.format(CHANCE_LOW));
 			else tooltip.add(I18n.format(CHANCE, chance));
+		} else if (slotIndex == 0) {
+			int count = Infusion.INFUSIONS.get(cost.infusion).getOutputFor(ingredient);
+			tooltip.add(I18n.format(GuiInfusion.PROVIDES, count));
 		}
 	}
 

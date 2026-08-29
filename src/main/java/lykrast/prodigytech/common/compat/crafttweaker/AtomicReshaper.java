@@ -8,7 +8,9 @@ import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.oredict.IOreDictEntry;
 import lykrast.prodigytech.common.recipe.AtomicReshaperManager;
+import lykrast.prodigytech.common.recipe.Infusion;
 import lykrast.prodigytech.common.recipe.AtomicReshaperManager.AtomicReshaperRecipe;
+import lykrast.prodigytech.common.recipe.Infusion.InfusionCost;
 import lykrast.prodigytech.common.util.Config;
 import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.Optional;
@@ -19,13 +21,13 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @ZenRegister
 public class AtomicReshaper {
 	//Helpers
-	private static AtomicReshaperRecipe recipe(IItemStack in, IItemStack out, int primordium, int time) {
+	private static AtomicReshaperRecipe recipe(IItemStack in, IItemStack out, InfusionCost primordium, int time) {
 		return new AtomicReshaperRecipe(CraftTweakerHelper.toItemStack(in), time, primordium, CraftTweakerHelper.toItemStack(out));
 	}
-	private static AtomicReshaperRecipe recipe(IOreDictEntry in, IItemStack out, int primordium, int time) {
+	private static AtomicReshaperRecipe recipe(IOreDictEntry in, IItemStack out, InfusionCost primordium, int time) {
 		return new AtomicReshaperRecipe(in.getName(), time, primordium, CraftTweakerHelper.toItemStack(out));
 	}
-	private static AtomicReshaperRecipe recipe(IItemStack in, int primordium, int time, IItemStack[] outputs, int[] weights) {
+	private static AtomicReshaperRecipe recipe(IItemStack in, InfusionCost primordium, int time, IItemStack[] outputs, int[] weights) {
 		Object[] args = new Object[outputs.length * 2];
 		for (int i=0; i<outputs.length; i++) {
 			args[2*i] = CraftTweakerHelper.toItemStack(outputs[i]);
@@ -33,32 +35,57 @@ public class AtomicReshaper {
 		}
 		return new AtomicReshaperRecipe(CraftTweakerHelper.toItemStack(in), time, primordium, args);
 	}
-	
-	//Add
+
 	@ZenMethod
 	public static void addRecipe(IItemStack in, IItemStack out, int primordium, @Optional int time) {
-		if (in == null) throw new IllegalArgumentException("Input cannot be null");
-		if (out == null) throw new IllegalArgumentException("Output cannot be null");
-		if (primordium <= 0) throw new IllegalArgumentException("Primordium unit amount must be positive");
-		else if (primordium > Config.atomicReshaperMaxPrimordium * 100) throw new IllegalArgumentException("Recipe requires more Primordium units than the Atomic Reshaper is configured to hold");
-		else if (primordium > (Config.atomicReshaperMaxPrimordium - 1) * 100) CraftTweakerAPI.logWarning("Recipe requires too many Primordium units to be reliably made, consider reducing it to " + ((Config.atomicReshaperMaxPrimordium - 1) * 100) + " or less or increase the Atomic Reshaper's Primordium capacity");
-		if (time <= 0) time = Config.atomicReshaperProcessTime;
-		CraftTweakerAPI.apply(new Add(recipe(in, out, primordium, time)));
+		addRecipe(in, out, "primordium", primordium, time);
 	}
 	
 	@ZenMethod
 	public static void addRecipe(IOreDictEntry in, IItemStack out, int primordium, @Optional int time) {
-		if (in == null) throw new IllegalArgumentException("Input cannot be null");
-		if (out == null) throw new IllegalArgumentException("Output cannot be null");
-		if (primordium <= 0) throw new IllegalArgumentException("Primordium unit amount must be positive");
-		else if (primordium > Config.atomicReshaperMaxPrimordium * 100) throw new IllegalArgumentException("Recipe requires more Primordium units than the Atomic Reshaper is configured to hold");
-		else if (primordium > (Config.atomicReshaperMaxPrimordium - 1) * 100) CraftTweakerAPI.logWarning("Recipe requires too many Primordium units to be reliably made, consider reducing it to " + ((Config.atomicReshaperMaxPrimordium - 1) * 100) + " or less or increase the Atomic Reshaper's Primordium capacity");
-		if (time <= 0) time = Config.atomicReshaperProcessTime;
-		CraftTweakerAPI.apply(new Add(recipe(in, out, primordium, time)));
+		addRecipe(in, out, "primordium", primordium, time);
 	}
 	
 	@ZenMethod
 	public static void addRecipeMulti(IItemStack in, int primordium, int time, IItemStack[] outputs, @Optional int[] weights) {
+		addRecipeMulti(in, "primordium", primordium, time, outputs, weights);
+	}
+
+	private static void validateInfusion(String infusion) {
+		Infusion data = Infusion.INFUSIONS.get(infusion);
+		if (data == null) {
+			throw new IllegalArgumentException("Infusion " + infusion + " is not registered");
+		}
+		if (!data.machines.contains("atomic_reshaper")) {
+			throw new IllegalArgumentException("Infusion " + infusion + " cannot be used with Atomic Reshaper");
+		}
+	}
+	
+	//Add
+	@ZenMethod
+	public static void addRecipe(IItemStack in, IItemStack out, String infusion, int primordium, @Optional int time) {
+		if (in == null) throw new IllegalArgumentException("Input cannot be null");
+		if (out == null) throw new IllegalArgumentException("Output cannot be null");
+		if (primordium <= 0) throw new IllegalArgumentException("Primordium unit amount must be positive");
+		if (primordium > Config.atomicReshaperCapacity) throw new IllegalArgumentException("Recipe requires more Primordium units than the Atomic Reshaper is configured to hold");
+		validateInfusion(infusion);
+		if (time <= 0) time = Config.atomicReshaperProcessTime;
+		CraftTweakerAPI.apply(new Add(recipe(in, out, new InfusionCost(infusion, primordium), time)));
+	}
+	
+	@ZenMethod
+	public static void addRecipe(IOreDictEntry in, IItemStack out, String infusion, int primordium, @Optional int time) {
+		if (in == null) throw new IllegalArgumentException("Input cannot be null");
+		if (out == null) throw new IllegalArgumentException("Output cannot be null");
+		if (primordium <= 0) throw new IllegalArgumentException("Primordium unit amount must be positive");
+		if (primordium > Config.atomicReshaperCapacity) throw new IllegalArgumentException("Recipe requires more Primordium units than the Atomic Reshaper is configured to hold");
+		validateInfusion(infusion);
+		if (time <= 0) time = Config.atomicReshaperProcessTime;
+		CraftTweakerAPI.apply(new Add(recipe(in, out, new InfusionCost(infusion, primordium), time)));
+	}
+	
+	@ZenMethod
+	public static void addRecipeMulti(IItemStack in, String infusion, int primordium, int time, IItemStack[] outputs, @Optional int[] weights) {
 		if (in == null) throw new IllegalArgumentException("Input cannot be null");
 		if (outputs == null) throw new IllegalArgumentException("Output array cannot be null");
 		if (weights == null) {
@@ -67,10 +94,10 @@ public class AtomicReshaper {
 		}
 		else if (weights.length != outputs.length) throw new IllegalArgumentException("Output array and weight array must have the same length");
 		if (primordium <= 0) throw new IllegalArgumentException("Primordium unit amount must be positive");
-		else if (primordium > Config.atomicReshaperMaxPrimordium * 100) throw new IllegalArgumentException("Recipe requires more Primordium units than the Atomic Reshaper is configured to hold");
-		else if (primordium > (Config.atomicReshaperMaxPrimordium - 1) * 100) CraftTweakerAPI.logWarning("Recipe requires too many Primordium units to be reliably made, consider reducing it to " + ((Config.atomicReshaperMaxPrimordium - 1) * 100) + " or less or increase the Atomic Reshaper's Primordium capacity");
+		if (primordium > Config.atomicReshaperCapacity) throw new IllegalArgumentException("Recipe requires more Primordium units than the Atomic Reshaper is configured to hold");
+		validateInfusion(infusion);
 		if (time <= 0) time = Config.atomicReshaperProcessTime;
-		CraftTweakerAPI.apply(new Add(recipe(in, primordium, time, outputs, weights)));
+		CraftTweakerAPI.apply(new Add(recipe(in, new InfusionCost(infusion, primordium), time, outputs, weights)));
 	}
 	
 	private static class Add implements IAction {

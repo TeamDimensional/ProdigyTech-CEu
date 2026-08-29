@@ -3,9 +3,10 @@ package lykrast.prodigytech.common.tileentity;
 import lykrast.prodigytech.common.block.BlockMachineActiveable;
 import lykrast.prodigytech.common.capability.CapabilityHotAir;
 import lykrast.prodigytech.common.capability.HotAirMachine;
-import lykrast.prodigytech.common.init.ModItems;
 import lykrast.prodigytech.common.recipe.AtomicReshaperManager;
+import lykrast.prodigytech.common.recipe.Infusion;
 import lykrast.prodigytech.common.recipe.AtomicReshaperManager.AtomicReshaperRecipe;
+import lykrast.prodigytech.common.recipe.Infusion.InfusionState;
 import lykrast.prodigytech.common.util.Config;
 import lykrast.prodigytech.common.util.ProdigyInventoryHandler;
 import net.minecraft.inventory.IInventory;
@@ -25,7 +26,9 @@ public class TileAtomicReshaper extends TileMachineInventory implements ITickabl
 	private int processTimeMax;
 	private HotAirMachine hotAir;
 	/** The amount of primordium in the machine */
-	private int primordium;
+	private InfusionState state;
+
+	public static final String MACHINE_NAME = "atomic_reshaper";
 
 	//Slots :
 	//0 Primordium
@@ -33,6 +36,7 @@ public class TileAtomicReshaper extends TileMachineInventory implements ITickabl
 	//2 Output
 	public TileAtomicReshaper() {
 		super(3);
+		state = new InfusionState(Config.atomicReshaperCapacity);
 		hotAir = new HotAirMachine(this, 0.5F);
 	}
 
@@ -43,15 +47,9 @@ public class TileAtomicReshaper extends TileMachineInventory implements ITickabl
 
 	@Override
 	public boolean isItemValidForSlot(int index, ItemStack stack) {
-		if (index == 0) return stack.getItem() == ModItems.primordium;
+		if (index == 0) return state.validInput(Infusion.getInfusionOutput(MACHINE_NAME, stack));
 		else if (index == 1) return AtomicReshaperManager.INSTANCE.isValidInput(stack);
 		else return false;
-	}
-	
-	private int canSmeltPrimordium()
-	{
-		if (getStackInSlot(0).isEmpty() || primordium > ((Config.atomicReshaperMaxPrimordium - 1) * 100)) return 0;
-		else return 100;
 	}
 
 	private AtomicReshaperRecipe cachedRecipe;
@@ -75,7 +73,7 @@ public class TileAtomicReshaper extends TileMachineInventory implements ITickabl
     	
     	updateCachedRecipe();
     	if (cachedRecipe == null) return false;
-    	if (cachedRecipe.getPrimordiumAmount() > primordium) return false;
+    	if (!state.subtract(cachedRecipe.getCost(), true)) return false;
     	
     	//Recipe only has 1 possible output, do merging checks
     	if (cachedRecipe.isSingleOutput())
@@ -115,12 +113,9 @@ public class TileAtomicReshaper extends TileMachineInventory implements ITickabl
         if (!this.world.isRemote)
         {
         	hotAir.updateInTemperature(world, pos);
-
-    		int primordiumAmount = canSmeltPrimordium();
-    		if (primordiumAmount > 0)
-    		{
-    			primordium += primordiumAmount;
+			if (state.add(Infusion.getInfusionOutput(MACHINE_NAME, getStackInSlot(0)), false)) {
     			getStackInSlot(0).shrink(1);
+				flag1 = true;
     		}
     		
         	if (canProcess())
@@ -191,7 +186,7 @@ public class TileAtomicReshaper extends TileMachineInventory implements ITickabl
 		}
 
         getStackInSlot(1).shrink(1);
-        primordium -= cachedRecipe.getPrimordiumAmount();
+		state.subtract(cachedRecipe.getCost(), false);
 	}
 	
 	private int getProcessSpeed() {
@@ -240,7 +235,9 @@ public class TileAtomicReshaper extends TileMachineInventory implements ITickabl
 	        case 3:
 	            return hotAir.getOutAirTemperature();
 	        case 4:
-	            return primordium;
+	            return state.getCount();
+	        case 5:
+	            return state.getInfusionId();
 	        default:
 	            return 0;
 	    }
@@ -263,14 +260,17 @@ public class TileAtomicReshaper extends TileMachineInventory implements ITickabl
 	        	hotAir.setOutAirTemperature(value);
 	            break;
 	        case 4:
-	            primordium = value;
+	            state.setCount(value);
+	            break;
+	        case 5:
+	            state.setInfusion(value);
 	            break;
 	    }
 	}
 
 	@Override
 	public int getFieldCount() {
-	    return 5;
+	    return 6;
 	}
 
 	@Override
@@ -303,7 +303,16 @@ public class TileAtomicReshaper extends TileMachineInventory implements ITickabl
         processTime = compound.getInteger("ProcessTime");
         processTimeMax = compound.getInteger("ProcessTimeMax");
         hotAir.deserializeNBT(compound.getCompoundTag("HotAir"));
-        primordium = compound.getInteger("Primordium");
+        int primordium = compound.getInteger("Primordium");
+		int infusion = compound.getInteger("Infusion");
+		String infusionName = null;
+		if (infusion == 0 && primordium > 0) {
+			infusionName = "primordium";
+		} else if (infusion != 0) {
+			infusionName = Infusion.INFUSIONS_BY_ID.get(infusion);
+		}
+		state.setInfusion(infusionName);
+		if (infusionName != null) state.setCount(primordium);
     }
 
     @Override
@@ -313,9 +322,14 @@ public class TileAtomicReshaper extends TileMachineInventory implements ITickabl
         compound.setInteger("ProcessTime", processTime);
         compound.setInteger("ProcessTimeMax", processTimeMax);
         compound.setTag("HotAir", hotAir.serializeNBT());
-        compound.setInteger("Primordium", primordium);
+        compound.setInteger("Primordium", state.getCount());
+        compound.setInteger("Infusion", state.getInfusionId());
 
         return compound;
     }
+
+	public InfusionState getInfusionState() {
+		return state;
+	}
 
 }

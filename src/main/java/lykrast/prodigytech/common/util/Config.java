@@ -24,9 +24,8 @@ public class Config {
 	public static boolean autoOreRecipes;
 	public static float heatSawmillPlankMultiplier, heatSawmillStickMultiplier;
 	public static boolean heatSawmillAutoPlankRecipes;
-	public static int soldererMaxGold;
+	public static int soldererCapacity, atomicReshaperCapacity;
 	public static int primordialisReactorRequiredInput;
-	public static int atomicReshaperMaxPrimordium;
 	public static int tartaricStokerTime;
 	public static boolean incineratorJEI;
 	public static int foodEnricherFoodIncrease, foodEnricherFoodCap;
@@ -42,6 +41,11 @@ public class Config {
 	//Zorra Altar
 	public static int altarBonusLvl;
 	public static float altarCostMult, altarUnknownMult;
+
+	@Deprecated
+	public static int atomicReshaperMaxPrimordium = 4;
+	@Deprecated
+	public static int soldererMaxGold = 81;
 	
 	public static void readConfig() {
 		Configuration cfg = CommonProxy.config;
@@ -110,8 +114,8 @@ public class Config {
 		soldererProcessTime = cfg.getInt("soldererProcessTime", CATEGORY_MACHINES, 400, 1, 3000, 
 				"The base amount of time (in ticks) that the Solderer takes to make 1 Crude Circuit\n"
 				+ "The time of all other recipes are derived from this value");
-		soldererMaxGold = cfg.getInt("soldererMaxGold", CATEGORY_MACHINES, 81, 9, 20736, 
-				"How much gold (in nuggets) can the Solderer hold in its internal buffer");
+		soldererCapacity = cfg.getInt("soldererCapacity", CATEGORY_MACHINES, 81, 9, 20736, 
+				"How much infusion can the Solderer hold in its internal buffer");
 		
 		//Magnetic Reassembler
 		magneticReassemblerProcessTime = cfg.getInt("magneticReassemblerProcessTime", CATEGORY_MACHINES, 300, 1, 3000, 
@@ -163,8 +167,8 @@ public class Config {
 		atomicReshaperProcessTime = cfg.getInt("atomicReshaperProcessTime", CATEGORY_MACHINES, 200, 1, 3000, 
 				"The base amount of time (in ticks) that the Atomic Reassembler takes to process 1 item\n"
 				+ "Several recipes have shorter or longer processing time, which are all derived from this value");
-		atomicReshaperMaxPrimordium = cfg.getInt("atomicReshaperMaxPrimordium", CATEGORY_MACHINES, 4, 1, 64, 
-				"How many Primordium items can the Atomic Reshaper hold in its internal buffer");
+		atomicReshaperCapacity = cfg.getInt("atomicReshaperMaxPrimordium", CATEGORY_MACHINES, 400, 100, 10000, 
+				"How much infusion can the Atomic Reshaper hold in its internal buffer");
 		
 		//Tartaric Aeroheater
 		tartaricStokerTime = cfg.getInt("tartaricStokerTime", CATEGORY_MACHINES, 1600, 1, Short.MAX_VALUE, 

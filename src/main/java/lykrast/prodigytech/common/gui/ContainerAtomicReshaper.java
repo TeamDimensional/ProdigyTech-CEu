@@ -1,7 +1,7 @@
 package lykrast.prodigytech.common.gui;
 
-import lykrast.prodigytech.common.init.ModItems;
 import lykrast.prodigytech.common.recipe.AtomicReshaperManager;
+import lykrast.prodigytech.common.recipe.Infusion;
 import lykrast.prodigytech.common.tileentity.TileAtomicReshaper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -33,7 +33,7 @@ public class ContainerAtomicReshaper extends ContainerMachine<TileAtomicReshaper
             @Override
 			public boolean isItemValid(ItemStack stack)
             {
-                return stack.getItem() == ModItems.primordium;
+            	return tile.getInfusionState().validInput(Infusion.getInfusionOutput(TileAtomicReshaper.MACHINE_NAME, stack));
             }
     	});
 		//Input
@@ -133,7 +133,7 @@ public class ContainerAtomicReshaper extends ContainerMachine<TileAtomicReshaper
             else
             {
             	//Primordium
-            	if (itemstack1.getItem() == ModItems.primordium)
+            	if (tile.getInfusionState().validInput(Infusion.getInfusionOutput(TileAtomicReshaper.MACHINE_NAME, itemstack1)))
                 {
                     if (!this.mergeItemStack(itemstack1, 0, 1, false))
                     {

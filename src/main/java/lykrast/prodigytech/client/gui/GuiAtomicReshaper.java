@@ -1,13 +1,9 @@
 package lykrast.prodigytech.client.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.ImmutableList;
 
 import lykrast.prodigytech.common.gui.ContainerAtomicReshaper;
 import lykrast.prodigytech.common.tileentity.TileAtomicReshaper;
-import lykrast.prodigytech.common.util.Config;
 import lykrast.prodigytech.common.util.TooltipUtil;
 import lykrast.prodigytech.core.ProdigyTech;
 import net.minecraft.client.renderer.GlStateManager;
@@ -70,8 +66,9 @@ public class GuiAtomicReshaper extends GuiInventory {
 	    this.drawTexturedModalRect(guiLeft + 43, guiTop + 16 + (17 - l), 176, 17 + (17 - l), 18, l + 1);
 	
 	    //Primordium
-	    l = getFieldScaled(4, 52, 0, Config.atomicReshaperMaxPrimordium * 100);
-	    this.drawTexturedModalRect(guiLeft + 37, guiTop + 17 + (52 - l), 176, 35 + (52 - l), 4, l);
+		GuiInfusion.render(
+			this, tile.getInfusionState().getInfusionId(),
+			tile.getInfusionState().getCount(), 100, guiLeft + 37, guiTop + 17);
 	}
 
 	/**
@@ -112,18 +109,8 @@ public class GuiAtomicReshaper extends GuiInventory {
 		}
         else if (x >= guiLeft + 37 && x < guiLeft + 41 && y >= guiTop + 19 && y < guiTop + 70)
         {
-            this.drawHoveringText(getPrimordiumString(tile.getField(4)), x, y, fontRenderer);
+            this.drawHoveringText(ImmutableList.of(tile.getInfusionState().localize()), x, y, fontRenderer);
         }
-	}
-	
-	private List<String> getPrimordiumString(int amount)
-	{
-		List<String> list = new ArrayList<>();
-		
-		if (amount == 0) list.add(I18n.format(EMPTY));
-		else list.add(I18n.format(AMOUNT, amount));
-		
-		return list;
 	}
 
 }
