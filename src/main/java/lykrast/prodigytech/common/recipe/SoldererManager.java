@@ -148,10 +148,12 @@ public class SoldererManager {
             this.time = time;
         }
 
+        @Deprecated
         public SoldererRecipe(ItemStack pattern, ItemStack additive, ItemStack output, int gold) {
             this(pattern, additive, output, new InfusionCost("gold", gold));
         }
 
+        @Deprecated
         public SoldererRecipe(ItemStack pattern, ItemStack additive, ItemStack output, int gold, int time) {
             this(pattern, additive, output, new InfusionCost("gold", gold), time);
         }
@@ -222,7 +224,7 @@ public class SoldererManager {
 
         @Deprecated
         public boolean isEnoughGold(int gold) {
-            return gold >= this.gold.amount && this.gold.infusion.equals("gold");
+            return gold >= this.gold.amount;
         }
     }
 }

@@ -82,11 +82,13 @@ public class Infusion {
         }
 
         public int getInfusionId() {
-            return INFUSIONS.get(infusion).id;
+            Infusion infusion = INFUSIONS.get(this.infusion);
+            return infusion == null ? 0 : infusion.id;
         }
 
         public List<ItemStack> getRepresentatives() {
             Infusion infusionObj = INFUSIONS.get(infusion);
+            if (infusionObj == null) return new ArrayList<>();
             List<ItemStack> outputs = new ArrayList<>();
             for (InfusionItem item : infusionObj.items) {
                 int count = (amount + item.output - 1) / item.output;
@@ -122,10 +124,10 @@ public class Infusion {
         @SideOnly(Side.CLIENT)
         public String localize() {
             if (infusion == null) {
-                I18n.format("container.prodigytech.infusion.empty");
+                return I18n.format("container.prodigytech.infusion.empty");
             }
             Infusion infObject = INFUSIONS.get(infusion);
-            return infObject.localizeCount(amount);
+            return infObject == null ? "Error" : infObject.localizeCount(amount);
         }
     }
 
@@ -227,12 +229,12 @@ public class Infusion {
 
     public final List<InfusionItem> items = new ArrayList<>();
     public final List<String> machines = new ArrayList<>();
-    private String unlocalizedName;
-    private final List<InfusionNameDescriptor> naming = new ArrayList<>();
+    public String unlocalizedName;
+    public final List<InfusionNameDescriptor> naming = new ArrayList<>();
 
     public Infusion(String name, int id, String unlocalizedName) {
-        if (id == 0) {
-            throw new IllegalArgumentException("InfusionId 0 is used for no infusion, choose a different number");
+        if (id <= 0) {
+            throw new IllegalArgumentException("InfusionId 0 is used for no infusion, choose a different positive number");
         }
         this.name = name;
         this.id = id;
@@ -254,6 +256,18 @@ public class Infusion {
         INFUSIONS_BY_ID.put(infusion.id, infusion.name);
         for (String machine : infusion.machines) {
             MACHINES.computeIfAbsent(machine, x -> new ArrayList<>()).add(infusion);
+        }
+    }
+
+    public static void unregisterInfusion(@Nonnull Infusion infusion) {
+        if (infusion.id <= 2) {
+            throw new IllegalArgumentException("Gold and Primordium infusions cannot be unregistered");
+        }
+        INFUSIONS.remove(infusion.name);
+        INFUSIONS_BY_ID.remove(infusion.id);
+        for (String machine : infusion.machines) {
+            List<Infusion> infusions = MACHINES.get(machine);
+            infusions.removeIf(x -> x.id == infusion.id);
         }
     }
 

@@ -152,6 +152,7 @@ public class AtomicReshaperManager extends SimpleRecipeManagerAbstract<AtomicRes
             id = NEXTID++;
         }
 
+        @Deprecated
         public AtomicReshaperRecipe(ItemStack input, int time, int primordium, Object... outputs) {
             this(input, time, new InfusionCost("primordium", primordium), outputs);
         }
@@ -166,6 +167,7 @@ public class AtomicReshaperManager extends SimpleRecipeManagerAbstract<AtomicRes
             id = NEXTID++;
         }
 
+        @Deprecated
         public AtomicReshaperRecipe(String input, int time, int primordium, Object... outputs) {
             this(input, time, new InfusionCost("primordium", primordium), outputs);
         }

@@ -306,3 +306,19 @@ advancements.prodigytech.main.mystery_treat.description=Aquire a Mystery Treat
 #----------------------------
 guide.prodigytech.title=Handbook of Prodigies
 guide.prodigytech.landing=Welcome to an era of wonders and prodigies! Prodigy Tech will allow you to explore countless innovatives machines and technologies. Entries in this book will unlock as you progress along the mod's advancements.
+
+# GrS Wiki
+groovyscript.wiki.prodigytech_ceu.must_use_builder=Due to implementation details, builder() must be used on this class instead of recipeBuilder()
+groovyscript.wiki.prodigytech.atomic_reshaper.infusion.value=The infusion name for this recipe (default infusion is Primordium)
+groovyscript.wiki.prodigytech_ceu.atomic_reshaper_infusion=that the infusion is a valid infusion that can be used in Atomic Reshaper
+groovyscript.wiki.prodigytech.solderer.infusion.value=The infusion name for this recipe (default infusion is Gold)
+groovyscript.wiki.prodigytech_ceu.solderer_infusion=that the infusion is a valid infusion that can be used in Solderer
+groovyscript.wiki.prodigytech.infusion.title=Infusion Type
+groovyscript.wiki.prodigytech.infusion.description=Allows adding custom infusions for Atomic Reshaper and Solderer and customizing existing ones
+groovyscript.wiki.prodigytech.infusion.id.value=The ID of the Infusion. It is also used as the X coordinate in the Infusion texture map
+groovyscript.wiki.prodigytech_ceu.infusion_nonbasic=automatically loaded for basic infusions (Gold and Primordium)
+groovyscript.wiki.prodigytech.infusion.items.value=The items that can be used as additives providing this Infusion type
+groovyscript.wiki.prodigytech.infusion.naming.value=Configures custom naming for infusion amounts above 1. Each of the next multipliers will be applied on top of the previous modifier (i.e. Gold Ingot - 9, Gold Block - 9). All multipliers must be greater than 1
+groovyscript.wiki.prodigytech.infusion.machines.value=The machines that this infusion can be used in
+groovyscript.wiki.prodigytech_ceu.machine_types=the infusion types refer to valid machines (currently `solderer` and `atomic_reshaper`)
+groovyscript.wiki.prodigytech.infusion.unlocalizedName.value=The base unlocalized name of the infusion
