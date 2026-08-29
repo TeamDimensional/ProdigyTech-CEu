@@ -16,32 +16,37 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public abstract class BlockHotAirMachine<T extends TileMachineInventory> extends BlockMachineActiveable<T> {
-	public BlockHotAirMachine(float hardness, float resistance, int harvestLevel, Class<T> tile) {
-		super(Material.IRON, SoundType.METAL, hardness, resistance, "pickaxe", harvestLevel, tile);
-	}
-
+    public BlockHotAirMachine(float hardness, float resistance, int harvestLevel, Class<T> tile) {
+        super(Material.IRON, SoundType.METAL, hardness, resistance, "pickaxe", harvestLevel, tile);
+    }
 
     @Override
     public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn) {
-        TemperatureHelper.hotAirDamage(entityIn, getTileEntity(worldIn, pos).getCapability(CapabilityHotAir.HOT_AIR, EnumFacing.UP));
+        TemperatureHelper.hotAirDamage(
+                entityIn, getTileEntity(worldIn, pos).getCapability(CapabilityHotAir.HOT_AIR, EnumFacing.UP));
 
         super.onEntityWalk(worldIn, pos, entityIn);
     }
-    
+
     protected abstract int getGuiID();
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (worldIn.isRemote)
-        {
+    public boolean onBlockActivated(
+            World worldIn,
+            BlockPos pos,
+            IBlockState state,
+            EntityPlayer playerIn,
+            EnumHand hand,
+            EnumFacing facing,
+            float hitX,
+            float hitY,
+            float hitZ) {
+        if (worldIn.isRemote) {
             return true;
-        }
-        else
-        {
-        	T tile = getTileEntity(worldIn,pos);
+        } else {
+            T tile = getTileEntity(worldIn, pos);
 
-            if (tile != null)
-            {
+            if (tile != null) {
                 playerIn.openGui(ProdigyTech.instance, getGuiID(), worldIn, pos.getX(), pos.getY(), pos.getZ());
                 playerIn.openContainer.detectAndSendChanges();
             }
@@ -52,13 +57,12 @@ public abstract class BlockHotAirMachine<T extends TileMachineInventory> extends
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-    	T tile = getTileEntity(worldIn, pos);
+        T tile = getTileEntity(worldIn, pos);
 
-        if (tile != null)
-        {
+        if (tile != null) {
             InventoryHelper.dropInventoryItems(worldIn, pos, tile);
         }
-        
+
         super.breakBlock(worldIn, pos, state);
     }
 
@@ -71,5 +75,4 @@ public abstract class BlockHotAirMachine<T extends TileMachineInventory> extends
     public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos) {
         return getTileEntity(worldIn, pos).getComparatorOutput();
     }
-
 }

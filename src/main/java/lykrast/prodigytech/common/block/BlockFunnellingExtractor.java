@@ -11,28 +11,34 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockFunnellingExtractor extends BlockExtractor {
-	public BlockFunnellingExtractor(float hardness, float resistance, int harvestLevel) {
-		super(hardness, resistance, harvestLevel);
-	}
-    
+    public BlockFunnellingExtractor(float hardness, float resistance, int harvestLevel) {
+        super(hardness, resistance, harvestLevel);
+    }
+
     @Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileFunnellingExtractor();
-	}
-    
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TileFunnellingExtractor();
+    }
+
     @Override
-    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-    {
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
         return face.getOpposite() == state.getValue(FACING) ? BlockFaceShape.SOLID : BlockFaceShape.BOWL;
     }
 
     /**
-     * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
-     * IBlockstate
+     * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments
+     * to the IBlockstate
      */
     @Override
-    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-    {
+    public IBlockState getStateForPlacement(
+            World worldIn,
+            BlockPos pos,
+            EnumFacing facing,
+            float hitX,
+            float hitY,
+            float hitZ,
+            int meta,
+            EntityLivingBase placer) {
         return this.getDefaultState().withProperty(FACING, facing);
     }
 }

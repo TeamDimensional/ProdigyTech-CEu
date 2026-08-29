@@ -17,116 +17,131 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @ZenClass("mods.prodigytech.solderer")
 @ZenRegister
 public class Solderer {
-	//Helpers
-	private static SoldererRecipe recipe(IItemStack pattern, IItemStack additive, IItemStack output, InfusionCost gold, int time) {
-		return new SoldererRecipe(CraftTweakerHelper.toItemStack(pattern), CraftTweakerHelper.toItemStack(additive), CraftTweakerHelper.toItemStack(output), gold, time);
-	}
-	private static SoldererRecipe recipe(IItemStack pattern, IItemStack output, InfusionCost gold, int time) {
-		return recipe(pattern, null, output, gold, time);
-	}
+    // Helpers
+    private static SoldererRecipe recipe(
+            IItemStack pattern, IItemStack additive, IItemStack output, InfusionCost gold, int time) {
+        return new SoldererRecipe(
+                CraftTweakerHelper.toItemStack(pattern),
+                CraftTweakerHelper.toItemStack(additive),
+                CraftTweakerHelper.toItemStack(output),
+                gold,
+                time);
+    }
 
-	@ZenMethod
-	public static void addRecipe(IItemStack pattern, IItemStack additive, IItemStack output, int gold, @Optional int time) {
-		addRecipe(pattern, additive, output, "gold", gold, time);
-	}
+    private static SoldererRecipe recipe(IItemStack pattern, IItemStack output, InfusionCost gold, int time) {
+        return recipe(pattern, null, output, gold, time);
+    }
 
-	@ZenMethod
-	public static void addRecipe(IItemStack pattern, IItemStack output, int gold, @Optional int time) {
-		addRecipe(pattern, output, "gold", gold, time);
-	}
+    @ZenMethod
+    public static void addRecipe(
+            IItemStack pattern, IItemStack additive, IItemStack output, int gold, @Optional int time) {
+        addRecipe(pattern, additive, output, "gold", gold, time);
+    }
 
-	private static void validateInfusion(String infusion) {
-		Infusion data = Infusion.INFUSIONS.get(infusion);
-		if (data == null) {
-			throw new IllegalArgumentException("Infusion " + infusion + " is not registered");
-		}
-		if (!data.machines.contains("solderer")) {
-			throw new IllegalArgumentException("Infusion " + infusion + " cannot be used with Solderer");
-		}
-	}
-	
-	//Add
-	@ZenMethod
-	public static void addRecipe(IItemStack pattern, IItemStack additive, IItemStack output, String infusion, int gold, @Optional int time) {
-		if (pattern == null) throw new IllegalArgumentException("Pattern cannot be null");
-		if (output == null) throw new IllegalArgumentException("Output cannot be null");
-		if (gold <= 0) throw new IllegalArgumentException("Gold amount must be positive");
-		else if (gold > Config.soldererCapacity) throw new IllegalArgumentException("Recipe requires more Gold than the Solderer is configured to hold");
-		if (time <= 0) time = Config.soldererProcessTime;
-		validateInfusion(infusion);
-		CraftTweakerAPI.apply(new Add(recipe(pattern, additive, output, new InfusionCost(infusion, gold), time)));
-	}
-	
-	@ZenMethod
-	public static void addRecipe(IItemStack pattern, IItemStack output, String infusion, int gold, @Optional int time) {
-		if (pattern == null) throw new IllegalArgumentException("Pattern cannot be null");
-		if (output == null) throw new IllegalArgumentException("Output cannot be null");
-		if (gold <= 0) throw new IllegalArgumentException("Gold amount must be positive");
-		else if (gold > Config.soldererCapacity) throw new IllegalArgumentException("Recipe requires more Gold than the Solderer is configured to hold");
-		validateInfusion(infusion);
-		if (time <= 0) time = Config.soldererProcessTime;
-		CraftTweakerAPI.apply(new Add(recipe(pattern, output, new InfusionCost(infusion, gold), time)));
-	}
-	
-	private static class Add implements IAction {
-		private final SoldererRecipe recipe;
-		
-		public Add(SoldererRecipe recipe) {
-			this.recipe = recipe;
-		}
+    @ZenMethod
+    public static void addRecipe(IItemStack pattern, IItemStack output, int gold, @Optional int time) {
+        addRecipe(pattern, output, "gold", gold, time);
+    }
 
-		@Override
-		public void apply() {
-			SoldererManager.addRecipe(recipe);
-		}
+    private static void validateInfusion(String infusion) {
+        Infusion data = Infusion.INFUSIONS.get(infusion);
+        if (data == null) {
+            throw new IllegalArgumentException("Infusion " + infusion + " is not registered");
+        }
+        if (!data.machines.contains("solderer")) {
+            throw new IllegalArgumentException("Infusion " + infusion + " cannot be used with Solderer");
+        }
+    }
 
-		@Override
-		public String describe() {
-			return "Adding Solderer recipe for " + recipe.getOutput().getDisplayName();
-		}
-	}
-	
-	//Remove
-	@ZenMethod
-	public static void removeRecipe(IItemStack pattern, IItemStack additive) {
-		if (pattern == null) throw new IllegalArgumentException("Pattern cannot be null");
-		CraftTweakerAPI.apply(new Remove(CraftTweakerHelper.toItemStack(pattern), CraftTweakerHelper.toItemStack(additive)));
-	}
-	
-	private static class Remove implements IAction {
-		private final ItemStack pattern, additive;
-		
-		public Remove(ItemStack pattern, ItemStack additive) {
-			this.pattern = pattern;
-			this.additive = additive;
-		}
+    // Add
+    @ZenMethod
+    public static void addRecipe(
+            IItemStack pattern, IItemStack additive, IItemStack output, String infusion, int gold, @Optional int time) {
+        if (pattern == null) throw new IllegalArgumentException("Pattern cannot be null");
+        if (output == null) throw new IllegalArgumentException("Output cannot be null");
+        if (gold <= 0) throw new IllegalArgumentException("Gold amount must be positive");
+        else if (gold > Config.soldererCapacity)
+            throw new IllegalArgumentException("Recipe requires more Gold than the Solderer is configured to hold");
+        if (time <= 0) time = Config.soldererProcessTime;
+        validateInfusion(infusion);
+        CraftTweakerAPI.apply(new Add(recipe(pattern, additive, output, new InfusionCost(infusion, gold), time)));
+    }
 
-		@SuppressWarnings("deprecation")
-		@Override
-		public void apply() {
-			SoldererManager.removeRecipe(pattern, additive, Integer.MAX_VALUE);
-		}
+    @ZenMethod
+    public static void addRecipe(IItemStack pattern, IItemStack output, String infusion, int gold, @Optional int time) {
+        if (pattern == null) throw new IllegalArgumentException("Pattern cannot be null");
+        if (output == null) throw new IllegalArgumentException("Output cannot be null");
+        if (gold <= 0) throw new IllegalArgumentException("Gold amount must be positive");
+        else if (gold > Config.soldererCapacity)
+            throw new IllegalArgumentException("Recipe requires more Gold than the Solderer is configured to hold");
+        validateInfusion(infusion);
+        if (time <= 0) time = Config.soldererProcessTime;
+        CraftTweakerAPI.apply(new Add(recipe(pattern, output, new InfusionCost(infusion, gold), time)));
+    }
 
-		@Override
-		public String describe() {
-			return "Removing Solderer recipe with input " + pattern.getDisplayName() + " + " + additive.getDisplayName();
-		}
-	}
-	
-	@ZenMethod
-	public static void removeAll() {
-		CraftTweakerAPI.apply(new RemoveAll());
-	}
-	
-	private static class RemoveAll implements IAction {
-		@Override
-		public void apply() {
-			SoldererManager.removeAll();
-		}
+    private static class Add implements IAction {
+        private final SoldererRecipe recipe;
 
-		@Override
-		public String describe() {
-			return "Removing all Solderer recipes";
-		}
-	}
+        public Add(SoldererRecipe recipe) {
+            this.recipe = recipe;
+        }
+
+        @Override
+        public void apply() {
+            SoldererManager.addRecipe(recipe);
+        }
+
+        @Override
+        public String describe() {
+            return "Adding Solderer recipe for " + recipe.getOutput().getDisplayName();
+        }
+    }
+
+    // Remove
+    @ZenMethod
+    public static void removeRecipe(IItemStack pattern, IItemStack additive) {
+        if (pattern == null) throw new IllegalArgumentException("Pattern cannot be null");
+        CraftTweakerAPI.apply(
+                new Remove(CraftTweakerHelper.toItemStack(pattern), CraftTweakerHelper.toItemStack(additive)));
+    }
+
+    private static class Remove implements IAction {
+        private final ItemStack pattern, additive;
+
+        public Remove(ItemStack pattern, ItemStack additive) {
+            this.pattern = pattern;
+            this.additive = additive;
+        }
+
+        @SuppressWarnings("deprecation")
+        @Override
+        public void apply() {
+            SoldererManager.removeRecipe(pattern, additive, Integer.MAX_VALUE);
+        }
+
+        @Override
+        public String describe() {
+            return "Removing Solderer recipe with input "
+                    + pattern.getDisplayName()
+                    + " + "
+                    + additive.getDisplayName();
+        }
+    }
+
+    @ZenMethod
+    public static void removeAll() {
+        CraftTweakerAPI.apply(new RemoveAll());
+    }
+
+    private static class RemoveAll implements IAction {
+        @Override
+        public void apply() {
+            SoldererManager.removeAll();
+        }
+
+        @Override
+        public String describe() {
+            return "Removing all Solderer recipes";
+        }
+    }
 }

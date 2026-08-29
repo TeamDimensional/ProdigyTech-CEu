@@ -5,30 +5,25 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 
 public class BlockLogGeneric extends BlockLog {
-	
-	public BlockLogGeneric(float hardness, float resistance) {
-		super();
-		setHardness(hardness);
-		setResistance(resistance);
+
+    public BlockLogGeneric(float hardness, float resistance) {
+        super();
+        setHardness(hardness);
+        setResistance(resistance);
         setDefaultState(blockState.getBaseState().withProperty(LOG_AXIS, BlockLog.EnumAxis.Y));
-	}
+    }
 
     @Override
-	protected BlockStateContainer createBlockState()
-    {
+    protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, LOG_AXIS);
     }
 
-    /**
-     * Convert the given metadata into a BlockState for this Block
-     */
+    /** Convert the given metadata into a BlockState for this Block */
     @Override
-	public IBlockState getStateFromMeta(int meta)
-    {
+    public IBlockState getStateFromMeta(int meta) {
         IBlockState iblockstate = getDefaultState();
 
-        switch (meta & 12)
-        {
+        switch (meta & 12) {
             case 0:
                 iblockstate = iblockstate.withProperty(LOG_AXIS, BlockLog.EnumAxis.Y);
                 break;
@@ -45,16 +40,12 @@ public class BlockLogGeneric extends BlockLog {
         return iblockstate;
     }
 
-    /**
-     * Convert the BlockState into the correct metadata value
-     */
+    /** Convert the BlockState into the correct metadata value */
     @Override
-	@SuppressWarnings("incomplete-switch")
-    public int getMetaFromState(IBlockState state)
-    {
+    @SuppressWarnings("incomplete-switch")
+    public int getMetaFromState(IBlockState state) {
         int i = 0;
-        switch ((BlockLog.EnumAxis)state.getValue(LOG_AXIS))
-        {
+        switch ((BlockLog.EnumAxis) state.getValue(LOG_AXIS)) {
             case X:
                 i |= 4;
                 break;
@@ -67,5 +58,4 @@ public class BlockLogGeneric extends BlockLog {
 
         return i;
     }
-
 }

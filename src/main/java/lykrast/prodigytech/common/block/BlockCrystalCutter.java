@@ -10,22 +10,21 @@ import net.minecraft.world.World;
 public class BlockCrystalCutter extends BlockHotAirMachine<TileCrystalCutter> implements ICustomItemBlock {
 
     public BlockCrystalCutter(float hardness, float resistance, int harvestLevel) {
-		super(hardness, resistance, harvestLevel, TileCrystalCutter.class);
-	}
+        super(hardness, resistance, harvestLevel, TileCrystalCutter.class);
+    }
 
-	@Override
-	protected int getGuiID() {
-		return ProdigyTechGuiHandler.CRYSTAL_CUTTER;
-	}
+    @Override
+    protected int getGuiID() {
+        return ProdigyTechGuiHandler.CRYSTAL_CUTTER;
+    }
 
-	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileCrystalCutter();
-	}
+    @Override
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TileCrystalCutter();
+    }
 
-	@Override
-	public ItemBlock getItemBlock() {
-		return new ItemBlockMachineHotAir(this, 100, 80);
-	}
-
+    @Override
+    public ItemBlock getItemBlock() {
+        return new ItemBlockMachineHotAir(this, 100, 80);
+    }
 }

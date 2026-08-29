@@ -29,44 +29,59 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public abstract class BlockExtractor extends BlockGeneric implements ITileEntityProvider, ICustomItemBlock {
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
 
-	public BlockExtractor(float hardness, float resistance, int harvestLevel) {
-		super(Material.IRON, SoundType.METAL, hardness, resistance, "pickaxe", harvestLevel);
+    public BlockExtractor(float hardness, float resistance, int harvestLevel) {
+        super(Material.IRON, SoundType.METAL, hardness, resistance, "pickaxe", harvestLevel);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.DOWN));
-	}
+    }
 
     /**
-     * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
-     * IBlockstate
+     * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments
+     * to the IBlockstate
      */
     @Override
-	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-    {
+    public IBlockState getStateForPlacement(
+            World worldIn,
+            BlockPos pos,
+            EnumFacing facing,
+            float hitX,
+            float hitY,
+            float hitZ,
+            int meta,
+            EntityLivingBase placer) {
         return this.getDefaultState().withProperty(FACING, facing.getOpposite());
     }
 
-	protected TileExtractor getTileEntity(IBlockAccess world, BlockPos pos) {
-		TileEntity tile = world.getTileEntity(pos);
-		if (tile instanceof TileExtractor) return (TileExtractor)tile;
-		else return null;
-	}
+    protected TileExtractor getTileEntity(IBlockAccess world, BlockPos pos) {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof TileExtractor) return (TileExtractor) tile;
+        else return null;
+    }
 
-    /**
-     * Called when the block is right clicked by a player.
-     */
+    /** Called when the block is right clicked by a player. */
     @Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    {
-        if (worldIn.isRemote)
-        {
+    public boolean onBlockActivated(
+            World worldIn,
+            BlockPos pos,
+            IBlockState state,
+            EntityPlayer playerIn,
+            EnumHand hand,
+            EnumFacing facing,
+            float hitX,
+            float hitY,
+            float hitZ) {
+        if (worldIn.isRemote) {
             return true;
-        }
-        else
-        {
-        	TileExtractor tile = getTileEntity(worldIn,pos);
+        } else {
+            TileExtractor tile = getTileEntity(worldIn, pos);
 
-            if (tile != null)
-            {
-                playerIn.openGui(ProdigyTech.instance, ProdigyTechGuiHandler.EXTRACTOR, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            if (tile != null) {
+                playerIn.openGui(
+                        ProdigyTech.instance,
+                        ProdigyTechGuiHandler.EXTRACTOR,
+                        worldIn,
+                        pos.getX(),
+                        pos.getY(),
+                        pos.getZ());
                 playerIn.openContainer.detectAndSendChanges();
             }
 
@@ -75,82 +90,69 @@ public abstract class BlockExtractor extends BlockGeneric implements ITileEntity
     }
 
     /**
-     * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
+     * Called serverside after this block is replaced with another in Chunk, but before the Tile
+     * Entity is updated
      */
     @Override
-	public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
-    {
-    	TileExtractor tile = getTileEntity(worldIn, pos);
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        TileExtractor tile = getTileEntity(worldIn, pos);
 
-        if (tile != null)
-        {
+        if (tile != null) {
             InventoryHelper.dropInventoryItems(worldIn, pos, tile);
         }
-        
+
         super.breakBlock(worldIn, pos, state);
     }
 
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer()
-    {
+    public BlockRenderLayer getBlockLayer() {
         return BlockRenderLayer.CUTOUT_MIPPED;
     }
 
-    public static EnumFacing getFacing(int meta)
-    {
+    public static EnumFacing getFacing(int meta) {
         return EnumFacing.byIndex(meta & 7);
     }
 
-    /**
-     * Convert the given metadata into a BlockState for this Block
-     */
+    /** Convert the given metadata into a BlockState for this Block */
     @Override
-	public IBlockState getStateFromMeta(int meta)
-    {
+    public IBlockState getStateFromMeta(int meta) {
         return this.getDefaultState().withProperty(FACING, getFacing(meta));
     }
 
-    /**
-     * Convert the BlockState into the correct metadata value
-     */
+    /** Convert the BlockState into the correct metadata value */
     @Override
-	public int getMetaFromState(IBlockState state)
-    {
+    public int getMetaFromState(IBlockState state) {
         int i = 0;
-        i = i | ((EnumFacing)state.getValue(FACING)).getIndex();
+        i = i | ((EnumFacing) state.getValue(FACING)).getIndex();
 
         return i;
     }
 
     /**
-     * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed
-     * blockstate.
+     * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable,
+     * returns the passed blockstate.
      */
     @Override
-	public IBlockState withRotation(IBlockState state, Rotation rot)
-    {
-        return state.withProperty(FACING, rot.rotate((EnumFacing)state.getValue(FACING)));
+    public IBlockState withRotation(IBlockState state, Rotation rot) {
+        return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
     }
 
     /**
-     * Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed
-     * blockstate.
+     * Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns
+     * the passed blockstate.
      */
     @Override
-	public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
-    {
-        return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
+    public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
+        return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(FACING)));
     }
 
     @Override
-	protected BlockStateContainer createBlockState()
-    {
+    protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, FACING);
     }
 
-	@Override
-	public ItemBlock getItemBlock() {
-		return new ItemBlockInfoShift(this);
-	}
-
+    @Override
+    public ItemBlock getItemBlock() {
+        return new ItemBlockInfoShift(this);
+    }
 }

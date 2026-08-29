@@ -1,7 +1,6 @@
 package lykrast.prodigytech.common.block;
 
 import java.util.List;
-
 import lykrast.prodigytech.common.gui.ProdigyTechGuiHandler;
 import lykrast.prodigytech.common.item.ItemBlockInfoShift;
 import lykrast.prodigytech.common.tileentity.TileAeroheaterCapacitor;
@@ -17,29 +16,28 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BlockAeroheaterCapacitor extends BlockHotAirMachine<TileAeroheaterCapacitor> implements ICustomItemBlock {
 
     public BlockAeroheaterCapacitor(float hardness, float resistance, int harvestLevel) {
-		super(hardness, resistance, harvestLevel, TileAeroheaterCapacitor.class);
-	}
+        super(hardness, resistance, harvestLevel, TileAeroheaterCapacitor.class);
+    }
 
-	@Override
-	protected int getGuiID() {
-		return ProdigyTechGuiHandler.AEROHEATER_CAPACITOR;
-	}
+    @Override
+    protected int getGuiID() {
+        return ProdigyTechGuiHandler.AEROHEATER_CAPACITOR;
+    }
 
-	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileAeroheaterCapacitor();
-	}
+    @Override
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TileAeroheaterCapacitor();
+    }
 
-	@Override
-	public ItemBlock getItemBlock() {
-		return new ItemBlockInfoShift(this) {
-			@Override
-			@SideOnly(Side.CLIENT)
-			protected void addInfo(ItemStack stack, List<String> tooltip) {
-				super.addInfo(stack, tooltip);
-				tooltip.add(I18n.format(TooltipUtil.AEROHEATER_HEAT_MAXIMUM_VARIABLE));
-			}
-		};
-	}
-
+    @Override
+    public ItemBlock getItemBlock() {
+        return new ItemBlockInfoShift(this) {
+            @Override
+            @SideOnly(Side.CLIENT)
+            protected void addInfo(ItemStack stack, List<String> tooltip) {
+                super.addInfo(stack, tooltip);
+                tooltip.add(I18n.format(TooltipUtil.AEROHEATER_HEAT_MAXIMUM_VARIABLE));
+            }
+        };
+    }
 }

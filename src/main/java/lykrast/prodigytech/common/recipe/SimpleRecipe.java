@@ -4,86 +4,84 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class SimpleRecipe implements ISingleInputRecipe, Comparable<SimpleRecipe> {
-	private static int NEXTID = 0;
-	/**
-	 * A simple int used to sort the unordered recipes by order of creation for JEI. It's nicer.
-	 */
-	private int id;
-	
-	protected final ItemStack input;
-	protected final ItemStack output;
-	protected final int time;
-	protected final String oreInput;
+    private static int NEXTID = 0;
 
-	public SimpleRecipe(ItemStack input, ItemStack output, int time) {
-		this.input = input;
-		// No support for recipes requiring multiple items for now
-		input.setCount(1);
-		this.output = output;
-		this.time = time;
-		oreInput = null;
-		
-		id = NEXTID++;
-	}
+    /** A simple int used to sort the unordered recipes by order of creation for JEI. It's nicer. */
+    private int id;
 
-	public SimpleRecipe(String inputOre, ItemStack output, int time) {
-		oreInput = inputOre;
-		this.input = ItemStack.EMPTY;
-		this.output = output;
-		this.time = time;
-		
-		id = NEXTID++;
-	}
-	
-	/**
-	 * Say if this recipe has an Ore Dictionary input.
-	 * @return if this recipe has an Ore Dictionary input
-	 */
-	@Override
-	public boolean isOreRecipe() {
-		return oreInput != null && input.isEmpty();
-	}
+    protected final ItemStack input;
+    protected final ItemStack output;
+    protected final int time;
+    protected final String oreInput;
 
-	@Override
-	public ItemStack getInput() {
-		return input.copy();
-	}
+    public SimpleRecipe(ItemStack input, ItemStack output, int time) {
+        this.input = input;
+        // No support for recipes requiring multiple items for now
+        input.setCount(1);
+        this.output = output;
+        this.time = time;
+        oreInput = null;
 
-	@Override
-	public String getOreInput() {
-		return oreInput;
-	}
+        id = NEXTID++;
+    }
 
-	public ItemStack getOutput() {
-		return output.copy();
-	}
+    public SimpleRecipe(String inputOre, ItemStack output, int time) {
+        oreInput = inputOre;
+        this.input = ItemStack.EMPTY;
+        this.output = output;
+        this.time = time;
 
-	public int getTimeTicks() {
-		return time;
-	}
+        id = NEXTID++;
+    }
 
-	public int getTimeProcessing() {
-		return time * 10;
-	}
+    /**
+     * Say if this recipe has an Ore Dictionary input.
+     *
+     * @return if this recipe has an Ore Dictionary input
+     */
+    @Override
+    public boolean isOreRecipe() {
+        return oreInput != null && input.isEmpty();
+    }
 
-	@Override
-	public boolean isValidInput(ItemStack in) {
-		if (in.isEmpty())
-			return false;
-		if (oreInput != null) {
-			int[] oreIDs = OreDictionary.getOreIDs(in);
-			for (int i : oreIDs) {
-				if (OreDictionary.getOreName(i).equals(oreInput))
-					return true;
-			}
-			return false;
-		}
+    @Override
+    public ItemStack getInput() {
+        return input.copy();
+    }
 
-		return (in.isItemEqual(input) && in.getCount() >= input.getCount());
-	}
+    @Override
+    public String getOreInput() {
+        return oreInput;
+    }
 
-	@Override
-	public int compareTo(SimpleRecipe other) {
-		return Integer.compareUnsigned(id, other.id);
-	}
+    public ItemStack getOutput() {
+        return output.copy();
+    }
+
+    public int getTimeTicks() {
+        return time;
+    }
+
+    public int getTimeProcessing() {
+        return time * 10;
+    }
+
+    @Override
+    public boolean isValidInput(ItemStack in) {
+        if (in.isEmpty()) return false;
+        if (oreInput != null) {
+            int[] oreIDs = OreDictionary.getOreIDs(in);
+            for (int i : oreIDs) {
+                if (OreDictionary.getOreName(i).equals(oreInput)) return true;
+            }
+            return false;
+        }
+
+        return (in.isItemEqual(input) && in.getCount() >= input.getCount());
+    }
+
+    @Override
+    public int compareTo(SimpleRecipe other) {
+        return Integer.compareUnsigned(id, other.id);
+    }
 }

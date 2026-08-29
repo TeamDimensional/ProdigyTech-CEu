@@ -1,14 +1,12 @@
 package lykrast.prodigytech.common.recipe;
 
+import groovyjarjarantlr4.v4.runtime.misc.Nullable;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.Nonnull;
-
-import groovyjarjarantlr4.v4.runtime.misc.Nullable;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lykrast.prodigytech.common.init.ModItems;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
@@ -23,7 +21,9 @@ public class Infusion {
 
     public static class InfusionItem {
         @Nullable final ItemStack item;
+
         @Nullable final String oreDict;
+
         final int output;
         final int oreDictId;
 
@@ -97,7 +97,11 @@ public class Infusion {
                 } else {
                     List<ItemStack> oredictStacks = OreDictionary.getOres(item.oreDict);
                     if (oredictStacks.isEmpty()) {
-                        throw new IllegalStateException("Infusion " + infusion + " registered a representative oredict " + item.oreDict + ", which has no items");
+                        throw new IllegalStateException("Infusion "
+                                + infusion
+                                + " registered a representative oredict "
+                                + item.oreDict
+                                + ", which has no items");
                     }
                     ItemStack oredictOutput = oredictStacks.get(0).copy();
                     oredictOutput.setCount(count);
@@ -127,6 +131,7 @@ public class Infusion {
 
     public static class InfusionState {
         @Nullable String infusion;
+
         int count;
         int capacity;
 
@@ -174,7 +179,9 @@ public class Infusion {
         }
 
         public boolean add(@Nullable InfusionCost infusion, boolean simulate) {
-            if (infusion == null || !(this.infusion == null || infusion.infusion.equals(this.infusion)) || capacity < count + infusion.amount) {
+            if (infusion == null
+                    || !(this.infusion == null || infusion.infusion.equals(this.infusion))
+                    || capacity < count + infusion.amount) {
                 return false;
             }
             if (!simulate) {
@@ -195,7 +202,8 @@ public class Infusion {
             }
             Infusion infObject = INFUSIONS.get(infusion);
             if (infObject == null) {
-                throw new IllegalStateException("Infusion " + infusion + " is in a machine, but it's not a valid infusion");
+                throw new IllegalStateException(
+                        "Infusion " + infusion + " is in a machine, but it's not a valid infusion");
             }
             return infObject.localizeCount(count);
         }
@@ -319,5 +327,4 @@ public class Infusion {
         }
         return null;
     }
-
 }

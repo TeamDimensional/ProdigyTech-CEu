@@ -1,7 +1,6 @@
 package lykrast.prodigytech.common.block;
 
 import java.util.Random;
-
 import lykrast.prodigytech.common.gui.ProdigyTechGuiHandler;
 import lykrast.prodigytech.common.item.ItemBlockInfoShift;
 import lykrast.prodigytech.common.tileentity.TileExplosionFurnace;
@@ -26,41 +25,53 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockExplosionFurnace extends BlockMachine<TileExplosionFurnace> implements ICustomStateMapper, ICustomItemBlock {
+public class BlockExplosionFurnace extends BlockMachine<TileExplosionFurnace>
+        implements ICustomStateMapper, ICustomItemBlock {
 
     public static final PropertyBool TRIGGERED = PropertyBool.create("triggered");
-    
-	public BlockExplosionFurnace(float hardness, float resistance, int harvestLevel) {
-		super(Material.ROCK, TileExplosionFurnace.class);
-		setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(TRIGGERED, Boolean.valueOf(false)));
-		setSoundType(SoundType.STONE);
-		setHardness(hardness);
-		setResistance(resistance);
-		setHarvestLevel("pickaxe", harvestLevel);
-	}
 
-	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileExplosionFurnace();
-	}
+    public BlockExplosionFurnace(float hardness, float resistance, int harvestLevel) {
+        super(Material.ROCK, TileExplosionFurnace.class);
+        setDefaultState(blockState
+                .getBaseState()
+                .withProperty(FACING, EnumFacing.NORTH)
+                .withProperty(TRIGGERED, Boolean.valueOf(false)));
+        setSoundType(SoundType.STONE);
+        setHardness(hardness);
+        setResistance(resistance);
+        setHarvestLevel("pickaxe", harvestLevel);
+    }
 
-    /**
-     * Called when the block is right clicked by a player.
-     */
     @Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    {
-        if (worldIn.isRemote)
-        {
-            return true;
-        }
-        else
-        {
-            TileExplosionFurnace tile = getTileEntity(worldIn,pos);
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TileExplosionFurnace();
+    }
 
-            if (tile != null)
-            {
-                playerIn.openGui(ProdigyTech.instance, ProdigyTechGuiHandler.EXPLOSION_FURNACE, worldIn, pos.getX(), pos.getY(), pos.getZ());
+    /** Called when the block is right clicked by a player. */
+    @Override
+    public boolean onBlockActivated(
+            World worldIn,
+            BlockPos pos,
+            IBlockState state,
+            EntityPlayer playerIn,
+            EnumHand hand,
+            EnumFacing facing,
+            float hitX,
+            float hitY,
+            float hitZ) {
+        if (worldIn.isRemote) {
+            return true;
+        } else {
+            TileExplosionFurnace tile = getTileEntity(worldIn, pos);
+
+            if (tile != null) {
+                playerIn.openGui(
+                        ProdigyTech.instance,
+                        ProdigyTechGuiHandler.EXPLOSION_FURNACE,
+                        worldIn,
+                        pos.getX(),
+                        pos.getY(),
+                        pos.getZ());
                 playerIn.openContainer.detectAndSendChanges();
             }
 
@@ -68,77 +79,72 @@ public class BlockExplosionFurnace extends BlockMachine<TileExplosionFurnace> im
         }
     }
 
-    /**
-     * How many world ticks before ticking
-     */
+    /** How many world ticks before ticking */
     @Override
-	public int tickRate(World worldIn)
-    {
+    public int tickRate(World worldIn) {
         return 4;
     }
 
     /**
-     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
-     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
-     * block, etc.
+     * Called when a neighboring block was changed and marks that this state should perform any checks
+     * during a neighbor change. Cases may include when redstone power is updated, cactus blocks
+     * popping off due to a neighboring solid block, etc.
      */
     @Override
-	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
-    {
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         boolean flag = worldIn.isBlockPowered(pos) || worldIn.isBlockPowered(pos.up());
-        boolean flag1 = ((Boolean)state.getValue(TRIGGERED)).booleanValue();
+        boolean flag1 = ((Boolean) state.getValue(TRIGGERED)).booleanValue();
 
-        if (flag && !flag1)
-        {
+        if (flag && !flag1) {
             worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
             worldIn.setBlockState(pos, state.withProperty(TRIGGERED, Boolean.valueOf(true)), 4);
-        }
-        else if (!flag && flag1)
-        {
+        } else if (!flag && flag1) {
             worldIn.setBlockState(pos, state.withProperty(TRIGGERED, Boolean.valueOf(false)), 4);
         }
     }
 
     @Override
-	public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
-    {
-        if (!worldIn.isRemote)
-        {
+    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+        if (!worldIn.isRemote) {
             TileExplosionFurnace tile = getTileEntity(worldIn, pos);
             if (tile != null) tile.process(state.getValue(FACING));
         }
     }
 
     /**
-     * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
-     * IBlockstate
+     * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments
+     * to the IBlockstate
      */
     @Override
-	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-    {
-        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(TRIGGERED, Boolean.valueOf(false));
+    public IBlockState getStateForPlacement(
+            World worldIn,
+            BlockPos pos,
+            EnumFacing facing,
+            float hitX,
+            float hitY,
+            float hitZ,
+            int meta,
+            EntityLivingBase placer) {
+        return this.getDefaultState()
+                .withProperty(FACING, placer.getHorizontalFacing().getOpposite())
+                .withProperty(TRIGGERED, Boolean.valueOf(false));
     }
 
-    /**
-     * Convert the given metadata into a BlockState for this Block
-     */
+    /** Convert the given metadata into a BlockState for this Block */
     @Override
-	public IBlockState getStateFromMeta(int meta)
-    {
-    	return this.getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta & 7)).withProperty(TRIGGERED, Boolean.valueOf((meta & 8) > 0));
+    public IBlockState getStateFromMeta(int meta) {
+        return this.getDefaultState()
+                .withProperty(FACING, EnumFacing.byHorizontalIndex(meta & 7))
+                .withProperty(TRIGGERED, Boolean.valueOf((meta & 8) > 0));
     }
 
-    /**
-     * Convert the BlockState into the correct metadata value
-     */
+    /** Convert the BlockState into the correct metadata value */
     @Override
-	public int getMetaFromState(IBlockState state)
-    {
+    public int getMetaFromState(IBlockState state) {
         int i = 0;
-        i = i | ((EnumFacing)state.getValue(FACING)).getHorizontalIndex();
+        i = i | ((EnumFacing) state.getValue(FACING)).getHorizontalIndex();
 
-        if (((Boolean)state.getValue(TRIGGERED)).booleanValue())
-        {
+        if (((Boolean) state.getValue(TRIGGERED)).booleanValue()) {
             i |= 8;
         }
 
@@ -146,24 +152,22 @@ public class BlockExplosionFurnace extends BlockMachine<TileExplosionFurnace> im
     }
 
     @Override
-	protected BlockStateContainer createBlockState()
-    {
+    protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, FACING, TRIGGERED);
     }
-	
-	/**
-     * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
+
+    /**
+     * Called serverside after this block is replaced with another in Chunk, but before the Tile
+     * Entity is updated
      */
     @Override
-	public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
-    {
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         TileExplosionFurnace tile = getTileEntity(worldIn, pos);
 
-        if (tile != null)
-        {
+        if (tile != null) {
             InventoryHelper.dropInventoryItems(worldIn, pos, tile);
         }
-        
+
         super.breakBlock(worldIn, pos, state);
     }
 
@@ -177,15 +181,15 @@ public class BlockExplosionFurnace extends BlockMachine<TileExplosionFurnace> im
         return getTileEntity(worldIn, pos).getComparatorOutput();
     }
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void setCustomStateMapper() {
-		ModelLoader.setCustomStateMapper(this, (new StateMap.Builder()).ignore(TRIGGERED).build());
-	}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void setCustomStateMapper() {
+        ModelLoader.setCustomStateMapper(
+                this, (new StateMap.Builder()).ignore(TRIGGERED).build());
+    }
 
-	@Override
-	public ItemBlock getItemBlock() {
-		return new ItemBlockInfoShift(this);
-	}
-
+    @Override
+    public ItemBlock getItemBlock() {
+        return new ItemBlockInfoShift(this);
+    }
 }

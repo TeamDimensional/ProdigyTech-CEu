@@ -2,7 +2,6 @@ package lykrast.prodigytech.common.compat.jei;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import lykrast.prodigytech.common.recipe.MagneticReassemblerManager;
 import lykrast.prodigytech.common.recipe.SimpleRecipe;
 import mezz.jei.api.IGuiHelper;
@@ -12,31 +11,29 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 
 public class MagneticReassemblerCategory extends ProdigyCategory<SimpleRecipeWrapper> {
-	public static final String UID = "ptreassembler";
+    public static final String UID = "ptreassembler";
 
-	public MagneticReassemblerCategory(IGuiHelper guiHelper) {
-		super(guiHelper, guiHelper.createDrawable(ProdigyTechJEI.GUI, 0, 36, 82, 26), UID);
-	}
+    public MagneticReassemblerCategory(IGuiHelper guiHelper) {
+        super(guiHelper, guiHelper.createDrawable(ProdigyTechJEI.GUI, 0, 36, 82, 26), UID);
+    }
 
-	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, SimpleRecipeWrapper recipeWrapper, IIngredients ingredients) {
-		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
+    @Override
+    public void setRecipe(IRecipeLayout recipeLayout, SimpleRecipeWrapper recipeWrapper, IIngredients ingredients) {
+        IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
-		guiItemStacks.init(0, true, 0, 4);
-		guiItemStacks.init(1, false, 60, 4);
+        guiItemStacks.init(0, true, 0, 4);
+        guiItemStacks.init(1, false, 60, 4);
 
-		guiItemStacks.set(ingredients);
-	}
+        guiItemStacks.set(ingredients);
+    }
 
-	public static void registerRecipes(IModRegistry registry)
-	{
-		IGuiHelper guiHelper = registry.getJeiHelpers().getGuiHelper();
-		List<SimpleRecipeWrapper> list = new ArrayList<>();
+    public static void registerRecipes(IModRegistry registry) {
+        IGuiHelper guiHelper = registry.getJeiHelpers().getGuiHelper();
+        List<SimpleRecipeWrapper> list = new ArrayList<>();
 
-		List<SimpleRecipe> recipes = MagneticReassemblerManager.INSTANCE.getAllRecipes();
-		recipes.stream().sorted().forEachOrdered(recipe -> list.add(new SimpleRecipeWrapper(recipe, guiHelper)));
-		
-		registry.addRecipes(list, UID);
-	}
+        List<SimpleRecipe> recipes = MagneticReassemblerManager.INSTANCE.getAllRecipes();
+        recipes.stream().sorted().forEachOrdered(recipe -> list.add(new SimpleRecipeWrapper(recipe, guiHelper)));
 
+        registry.addRecipes(list, UID);
+    }
 }

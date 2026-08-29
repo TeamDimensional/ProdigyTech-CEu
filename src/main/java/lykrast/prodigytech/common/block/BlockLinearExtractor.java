@@ -10,43 +10,38 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockLinearExtractor extends BlockExtractor {
-	public BlockLinearExtractor(float hardness, float resistance, int harvestLevel) {
-		super(hardness, resistance, harvestLevel);
+    public BlockLinearExtractor(float hardness, float resistance, int harvestLevel) {
+        super(hardness, resistance, harvestLevel);
         this.setLightOpacity(0);
-	}
-    
+    }
+
     @Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileLinearExtractor();
-	}
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TileLinearExtractor();
+    }
 
     /**
-     * Determines if the block is solid enough on the top side to support other blocks, like redstone components.
+     * Determines if the block is solid enough on the top side to support other blocks, like redstone
+     * components.
      */
     @Override
-    public boolean isTopSolid(IBlockState state)
-    {
+    public boolean isTopSolid(IBlockState state) {
         return state.getValue(FACING) == EnumFacing.UP;
     }
 
     @Override
-    public boolean isFullCube(IBlockState state)
-    {
+    public boolean isFullCube(IBlockState state) {
         return false;
     }
 
-    /**
-     * Used to determine ambient occlusion and culling when rebuilding chunks for render
-     */
+    /** Used to determine ambient occlusion and culling when rebuilding chunks for render */
     @Override
-    public boolean isOpaqueCube(IBlockState state)
-    {
+    public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
-    
+
     @Override
-    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-    {
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
         return face == state.getValue(FACING) ? BlockFaceShape.BOWL : BlockFaceShape.UNDEFINED;
     }
 }

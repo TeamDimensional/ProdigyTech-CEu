@@ -10,22 +10,21 @@ import net.minecraft.world.World;
 public class BlockAtomicReshaper extends BlockHotAirMachine<TileAtomicReshaper> implements ICustomItemBlock {
 
     public BlockAtomicReshaper(float hardness, float resistance, int harvestLevel) {
-		super(hardness, resistance, harvestLevel, TileAtomicReshaper.class);
-	}
+        super(hardness, resistance, harvestLevel, TileAtomicReshaper.class);
+    }
 
-	@Override
-	protected int getGuiID() {
-		return ProdigyTechGuiHandler.ATOMIC_RESHAPER;
-	}
+    @Override
+    protected int getGuiID() {
+        return ProdigyTechGuiHandler.ATOMIC_RESHAPER;
+    }
 
-	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileAtomicReshaper();
-	}
+    @Override
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TileAtomicReshaper();
+    }
 
-	@Override
-	public ItemBlock getItemBlock() {
-		return new ItemBlockMachineHotAir(this, 250, 50);
-	}
-
+    @Override
+    public ItemBlock getItemBlock() {
+        return new ItemBlockMachineHotAir(this, 250, 50);
+    }
 }

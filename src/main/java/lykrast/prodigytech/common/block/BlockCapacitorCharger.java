@@ -1,7 +1,6 @@
 package lykrast.prodigytech.common.block;
 
 import java.util.List;
-
 import lykrast.prodigytech.common.gui.ProdigyTechGuiHandler;
 import lykrast.prodigytech.common.item.ItemBlockInfoShift;
 import lykrast.prodigytech.common.tileentity.TileCapacitorCharger;
@@ -19,33 +18,32 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BlockCapacitorCharger extends BlockHotAirMachine<TileCapacitorCharger> implements ICustomItemBlock {
 
     public BlockCapacitorCharger(float hardness, float resistance, int harvestLevel) {
-		super(hardness, resistance, harvestLevel, TileCapacitorCharger.class);
-	}
+        super(hardness, resistance, harvestLevel, TileCapacitorCharger.class);
+    }
 
-	@Override
-	protected int getGuiID() {
-		return ProdigyTechGuiHandler.CAPACITOR_CHARGER;
-	}
+    @Override
+    protected int getGuiID() {
+        return ProdigyTechGuiHandler.CAPACITOR_CHARGER;
+    }
 
-	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileCapacitorCharger();
-	}
+    @Override
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TileCapacitorCharger();
+    }
 
-	@Override
-	public ItemBlock getItemBlock() {
-		return new ItemBlockInfoShift(this) {
-			@Override
-			@SideOnly(Side.CLIENT)
-			protected void addInfo(ItemStack stack, List<String> tooltip) {
-				super.addInfo(stack, tooltip);
-				tooltip.add(I18n.format(TooltipUtil.HEAT_MINIMUM_VARIABLE));
-			}
-		};
-	}
+    @Override
+    public ItemBlock getItemBlock() {
+        return new ItemBlockInfoShift(this) {
+            @Override
+            @SideOnly(Side.CLIENT)
+            protected void addInfo(ItemStack stack, List<String> tooltip) {
+                super.addInfo(stack, tooltip);
+                tooltip.add(I18n.format(TooltipUtil.HEAT_MINIMUM_VARIABLE));
+            }
+        };
+    }
 
-	//No hot air transmitted, no damage
+    // No hot air transmitted, no damage
     @Override
     public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn) {}
-
 }

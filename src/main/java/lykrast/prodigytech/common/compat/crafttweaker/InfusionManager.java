@@ -21,7 +21,7 @@ public class InfusionManager {
     private InfusionManager(Infusion infusion) {
         this.infusion = infusion;
     }
-    
+
     @ZenMethod
     public static InfusionManager addInfusion(String name, int id, String unlocalizedName) {
         if (Infusion.INFUSIONS.containsKey(name)) {
@@ -90,5 +90,4 @@ public class InfusionManager {
         infusion.setBaseName(name);
         return this;
     }
-
 }

@@ -7,24 +7,24 @@ import net.minecraft.item.ItemSword;
 
 public class ItemSwordZorrasteel extends ItemSword implements IZorrasteelEquipment {
 
-	public ItemSwordZorrasteel(ToolMaterial material) {
-		super(material);
-	}
+    public ItemSwordZorrasteel(ToolMaterial material) {
+        super(material);
+    }
 
-	@Override
-	public ZorraAltarManager getManager() {
-		return ZorraAltarManager.SWORD;
-	}
+    @Override
+    public ZorraAltarManager getManager() {
+        return ZorraAltarManager.SWORD;
+    }
 
-	//Zorrasteel tools are only enchantable on the Zorra Altar
-	
-	@Override
-	public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-		return false;
-	}
+    // Zorrasteel tools are only enchantable on the Zorra Altar
 
-	@Override
-	public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-		return false;
-	}
+    @Override
+    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+        return false;
+    }
+
+    @Override
+    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+        return false;
+    }
 }

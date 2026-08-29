@@ -12,39 +12,34 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class TemperatureHelper {
-	private TemperatureHelper() {}
-	
-	public static void hotAirDamage(Entity entity, int temperature)
-	{
-        if (!entity.isImmuneToFire() && entity instanceof EntityLivingBase && !EnchantmentHelper.hasFrostWalkerEnchantment((EntityLivingBase)entity))
-        {
-        	float damage = getDamageFromTemperature(temperature);
-        	if (damage >= 1.0F) entity.attackEntityFrom(DamageSource.HOT_FLOOR, damage);
-        }
-	}
-	
-	public static void hotAirDamage(Entity entity, IHotAir hotAir)
-	{
-		hotAirDamage(entity, hotAir.getOutAirTemperature());
-	}
-	
-	public static float getDamageFromTemperature (int temperature)
-	{
-		if (temperature < 100) return 0.0F;
-		
-		return temperature / 50F;
-	}
-	
-	public static int getBlockTemp(World world, BlockPos pos)
-	{
-		TileEntity tile = world.getTileEntity(pos);
-		if (tile != null)
-		{
-			IHotAir capability = tile.getCapability(CapabilityHotAir.HOT_AIR, EnumFacing.UP);
-			if (capability != null) return capability.getOutAirTemperature();
-		}
-		
-		return 30;
-	}
+    private TemperatureHelper() {}
 
+    public static void hotAirDamage(Entity entity, int temperature) {
+        if (!entity.isImmuneToFire()
+                && entity instanceof EntityLivingBase
+                && !EnchantmentHelper.hasFrostWalkerEnchantment((EntityLivingBase) entity)) {
+            float damage = getDamageFromTemperature(temperature);
+            if (damage >= 1.0F) entity.attackEntityFrom(DamageSource.HOT_FLOOR, damage);
+        }
+    }
+
+    public static void hotAirDamage(Entity entity, IHotAir hotAir) {
+        hotAirDamage(entity, hotAir.getOutAirTemperature());
+    }
+
+    public static float getDamageFromTemperature(int temperature) {
+        if (temperature < 100) return 0.0F;
+
+        return temperature / 50F;
+    }
+
+    public static int getBlockTemp(World world, BlockPos pos) {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile != null) {
+            IHotAir capability = tile.getCapability(CapabilityHotAir.HOT_AIR, EnumFacing.UP);
+            if (capability != null) return capability.getOutAirTemperature();
+        }
+
+        return 30;
+    }
 }

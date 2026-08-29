@@ -1,15 +1,14 @@
 package lykrast.prodigytech.common.compat.crafttweaker;
 
-import java.util.Arrays;
-
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.IAction;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.oredict.IOreDictEntry;
+import java.util.Arrays;
 import lykrast.prodigytech.common.recipe.AtomicReshaperManager;
-import lykrast.prodigytech.common.recipe.Infusion;
 import lykrast.prodigytech.common.recipe.AtomicReshaperManager.AtomicReshaperRecipe;
+import lykrast.prodigytech.common.recipe.Infusion;
 import lykrast.prodigytech.common.recipe.Infusion.InfusionCost;
 import lykrast.prodigytech.common.util.Config;
 import net.minecraft.item.ItemStack;
@@ -20,167 +19,181 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @ZenClass("mods.prodigytech.atomicreshaper")
 @ZenRegister
 public class AtomicReshaper {
-	//Helpers
-	private static AtomicReshaperRecipe recipe(IItemStack in, IItemStack out, InfusionCost primordium, int time) {
-		return new AtomicReshaperRecipe(CraftTweakerHelper.toItemStack(in), time, primordium, CraftTweakerHelper.toItemStack(out));
-	}
-	private static AtomicReshaperRecipe recipe(IOreDictEntry in, IItemStack out, InfusionCost primordium, int time) {
-		return new AtomicReshaperRecipe(in.getName(), time, primordium, CraftTweakerHelper.toItemStack(out));
-	}
-	private static AtomicReshaperRecipe recipe(IItemStack in, InfusionCost primordium, int time, IItemStack[] outputs, int[] weights) {
-		Object[] args = new Object[outputs.length * 2];
-		for (int i=0; i<outputs.length; i++) {
-			args[2*i] = CraftTweakerHelper.toItemStack(outputs[i]);
-			args[2*i+1] = weights[i];
-		}
-		return new AtomicReshaperRecipe(CraftTweakerHelper.toItemStack(in), time, primordium, args);
-	}
+    // Helpers
+    private static AtomicReshaperRecipe recipe(IItemStack in, IItemStack out, InfusionCost primordium, int time) {
+        return new AtomicReshaperRecipe(
+                CraftTweakerHelper.toItemStack(in), time, primordium, CraftTweakerHelper.toItemStack(out));
+    }
 
-	@ZenMethod
-	public static void addRecipe(IItemStack in, IItemStack out, int primordium, @Optional int time) {
-		addRecipe(in, out, "primordium", primordium, time);
-	}
-	
-	@ZenMethod
-	public static void addRecipe(IOreDictEntry in, IItemStack out, int primordium, @Optional int time) {
-		addRecipe(in, out, "primordium", primordium, time);
-	}
-	
-	@ZenMethod
-	public static void addRecipeMulti(IItemStack in, int primordium, int time, IItemStack[] outputs, @Optional int[] weights) {
-		addRecipeMulti(in, "primordium", primordium, time, outputs, weights);
-	}
+    private static AtomicReshaperRecipe recipe(IOreDictEntry in, IItemStack out, InfusionCost primordium, int time) {
+        return new AtomicReshaperRecipe(in.getName(), time, primordium, CraftTweakerHelper.toItemStack(out));
+    }
 
-	private static void validateInfusion(String infusion) {
-		Infusion data = Infusion.INFUSIONS.get(infusion);
-		if (data == null) {
-			throw new IllegalArgumentException("Infusion " + infusion + " is not registered");
-		}
-		if (!data.machines.contains("atomic_reshaper")) {
-			throw new IllegalArgumentException("Infusion " + infusion + " cannot be used with Atomic Reshaper");
-		}
-	}
-	
-	//Add
-	@ZenMethod
-	public static void addRecipe(IItemStack in, IItemStack out, String infusion, int primordium, @Optional int time) {
-		if (in == null) throw new IllegalArgumentException("Input cannot be null");
-		if (out == null) throw new IllegalArgumentException("Output cannot be null");
-		if (primordium <= 0) throw new IllegalArgumentException("Primordium unit amount must be positive");
-		if (primordium > Config.atomicReshaperCapacity) throw new IllegalArgumentException("Recipe requires more Primordium units than the Atomic Reshaper is configured to hold");
-		validateInfusion(infusion);
-		if (time <= 0) time = Config.atomicReshaperProcessTime;
-		CraftTweakerAPI.apply(new Add(recipe(in, out, new InfusionCost(infusion, primordium), time)));
-	}
-	
-	@ZenMethod
-	public static void addRecipe(IOreDictEntry in, IItemStack out, String infusion, int primordium, @Optional int time) {
-		if (in == null) throw new IllegalArgumentException("Input cannot be null");
-		if (out == null) throw new IllegalArgumentException("Output cannot be null");
-		if (primordium <= 0) throw new IllegalArgumentException("Primordium unit amount must be positive");
-		if (primordium > Config.atomicReshaperCapacity) throw new IllegalArgumentException("Recipe requires more Primordium units than the Atomic Reshaper is configured to hold");
-		validateInfusion(infusion);
-		if (time <= 0) time = Config.atomicReshaperProcessTime;
-		CraftTweakerAPI.apply(new Add(recipe(in, out, new InfusionCost(infusion, primordium), time)));
-	}
-	
-	@ZenMethod
-	public static void addRecipeMulti(IItemStack in, String infusion, int primordium, int time, IItemStack[] outputs, @Optional int[] weights) {
-		if (in == null) throw new IllegalArgumentException("Input cannot be null");
-		if (outputs == null) throw new IllegalArgumentException("Output array cannot be null");
-		if (weights == null) {
-			weights = new int[outputs.length];
-			Arrays.fill(weights, 1);
-		}
-		else if (weights.length != outputs.length) throw new IllegalArgumentException("Output array and weight array must have the same length");
-		if (primordium <= 0) throw new IllegalArgumentException("Primordium unit amount must be positive");
-		if (primordium > Config.atomicReshaperCapacity) throw new IllegalArgumentException("Recipe requires more Primordium units than the Atomic Reshaper is configured to hold");
-		validateInfusion(infusion);
-		if (time <= 0) time = Config.atomicReshaperProcessTime;
-		CraftTweakerAPI.apply(new Add(recipe(in, new InfusionCost(infusion, primordium), time, outputs, weights)));
-	}
-	
-	private static class Add implements IAction {
-		private final AtomicReshaperRecipe recipe;
-		
-		public Add(AtomicReshaperRecipe recipe) {
-			this.recipe = recipe;
-		}
+    private static AtomicReshaperRecipe recipe(
+            IItemStack in, InfusionCost primordium, int time, IItemStack[] outputs, int[] weights) {
+        Object[] args = new Object[outputs.length * 2];
+        for (int i = 0; i < outputs.length; i++) {
+            args[2 * i] = CraftTweakerHelper.toItemStack(outputs[i]);
+            args[2 * i + 1] = weights[i];
+        }
+        return new AtomicReshaperRecipe(CraftTweakerHelper.toItemStack(in), time, primordium, args);
+    }
 
-		@Override
-		public void apply() {
-			AtomicReshaperManager.INSTANCE.addRecipe(recipe);
-		}
+    @ZenMethod
+    public static void addRecipe(IItemStack in, IItemStack out, int primordium, @Optional int time) {
+        addRecipe(in, out, "primordium", primordium, time);
+    }
 
-		@Override
-		public String describe() {
-			return "Adding Atomic Reshaper recipe with input " + recipe.getInput().getDisplayName();
-		}
-	}
-	
-	//Remove
-	@ZenMethod
-	public static void removeRecipe(IItemStack in) {
-		if (in == null) throw new IllegalArgumentException("Input cannot be null");
-		CraftTweakerAPI.apply(new Remove(CraftTweakerHelper.toItemStack(in)));
-	}
-	
-	private static class Remove implements IAction {
-		private final ItemStack stack;
-		
-		public Remove(ItemStack stack) {
-			this.stack = stack;
-		}
+    @ZenMethod
+    public static void addRecipe(IOreDictEntry in, IItemStack out, int primordium, @Optional int time) {
+        addRecipe(in, out, "primordium", primordium, time);
+    }
 
-		@Override
-		public void apply() {
-			AtomicReshaperManager.INSTANCE.removeRecipe(stack);
-		}
+    @ZenMethod
+    public static void addRecipeMulti(
+            IItemStack in, int primordium, int time, IItemStack[] outputs, @Optional int[] weights) {
+        addRecipeMulti(in, "primordium", primordium, time, outputs, weights);
+    }
 
-		@Override
-		public String describe() {
-			return "Removing Atomic Reshaper recipe with input " + stack.getDisplayName();
-		}
-	}
-	
-	@ZenMethod
-	public static void removeRecipe(IOreDictEntry in) {
-		if (in == null) throw new IllegalArgumentException("Input cannot be null");
-		CraftTweakerAPI.apply(new RemoveOre(in.getName()));
-	}
-	
-	private static class RemoveOre implements IAction {
-		private final String ore;
-		
-		public RemoveOre(String ore) {
-			this.ore = ore;
-		}
+    private static void validateInfusion(String infusion) {
+        Infusion data = Infusion.INFUSIONS.get(infusion);
+        if (data == null) {
+            throw new IllegalArgumentException("Infusion " + infusion + " is not registered");
+        }
+        if (!data.machines.contains("atomic_reshaper")) {
+            throw new IllegalArgumentException("Infusion " + infusion + " cannot be used with Atomic Reshaper");
+        }
+    }
 
-		@Override
-		public void apply() {
-			AtomicReshaperManager.INSTANCE.removeOreRecipe(ore);
-		}
+    // Add
+    @ZenMethod
+    public static void addRecipe(IItemStack in, IItemStack out, String infusion, int primordium, @Optional int time) {
+        if (in == null) throw new IllegalArgumentException("Input cannot be null");
+        if (out == null) throw new IllegalArgumentException("Output cannot be null");
+        if (primordium <= 0) throw new IllegalArgumentException("Primordium unit amount must be positive");
+        if (primordium > Config.atomicReshaperCapacity)
+            throw new IllegalArgumentException(
+                    "Recipe requires more Primordium units than the Atomic Reshaper is configured to hold");
+        validateInfusion(infusion);
+        if (time <= 0) time = Config.atomicReshaperProcessTime;
+        CraftTweakerAPI.apply(new Add(recipe(in, out, new InfusionCost(infusion, primordium), time)));
+    }
 
-		@Override
-		public String describe() {
-			return "Removing Atomic Reshaper recipe with input " + ore;
-		}
-	}
-	
-	@ZenMethod
-	public static void removeAll() {
-		CraftTweakerAPI.apply(new RemoveAll());
-	}
-	
-	private static class RemoveAll implements IAction {
-		@Override
-		public void apply() {
-			AtomicReshaperManager.INSTANCE.removeAll();
-		}
+    @ZenMethod
+    public static void addRecipe(
+            IOreDictEntry in, IItemStack out, String infusion, int primordium, @Optional int time) {
+        if (in == null) throw new IllegalArgumentException("Input cannot be null");
+        if (out == null) throw new IllegalArgumentException("Output cannot be null");
+        if (primordium <= 0) throw new IllegalArgumentException("Primordium unit amount must be positive");
+        if (primordium > Config.atomicReshaperCapacity)
+            throw new IllegalArgumentException(
+                    "Recipe requires more Primordium units than the Atomic Reshaper is configured to hold");
+        validateInfusion(infusion);
+        if (time <= 0) time = Config.atomicReshaperProcessTime;
+        CraftTweakerAPI.apply(new Add(recipe(in, out, new InfusionCost(infusion, primordium), time)));
+    }
 
-		@Override
-		public String describe() {
-			return "Removing all Atomic Reshaper recipes";
-		}
-	}
+    @ZenMethod
+    public static void addRecipeMulti(
+            IItemStack in, String infusion, int primordium, int time, IItemStack[] outputs, @Optional int[] weights) {
+        if (in == null) throw new IllegalArgumentException("Input cannot be null");
+        if (outputs == null) throw new IllegalArgumentException("Output array cannot be null");
+        if (weights == null) {
+            weights = new int[outputs.length];
+            Arrays.fill(weights, 1);
+        } else if (weights.length != outputs.length)
+            throw new IllegalArgumentException("Output array and weight array must have the same length");
+        if (primordium <= 0) throw new IllegalArgumentException("Primordium unit amount must be positive");
+        if (primordium > Config.atomicReshaperCapacity)
+            throw new IllegalArgumentException(
+                    "Recipe requires more Primordium units than the Atomic Reshaper is configured to hold");
+        validateInfusion(infusion);
+        if (time <= 0) time = Config.atomicReshaperProcessTime;
+        CraftTweakerAPI.apply(new Add(recipe(in, new InfusionCost(infusion, primordium), time, outputs, weights)));
+    }
+
+    private static class Add implements IAction {
+        private final AtomicReshaperRecipe recipe;
+
+        public Add(AtomicReshaperRecipe recipe) {
+            this.recipe = recipe;
+        }
+
+        @Override
+        public void apply() {
+            AtomicReshaperManager.INSTANCE.addRecipe(recipe);
+        }
+
+        @Override
+        public String describe() {
+            return "Adding Atomic Reshaper recipe with input "
+                    + recipe.getInput().getDisplayName();
+        }
+    }
+
+    // Remove
+    @ZenMethod
+    public static void removeRecipe(IItemStack in) {
+        if (in == null) throw new IllegalArgumentException("Input cannot be null");
+        CraftTweakerAPI.apply(new Remove(CraftTweakerHelper.toItemStack(in)));
+    }
+
+    private static class Remove implements IAction {
+        private final ItemStack stack;
+
+        public Remove(ItemStack stack) {
+            this.stack = stack;
+        }
+
+        @Override
+        public void apply() {
+            AtomicReshaperManager.INSTANCE.removeRecipe(stack);
+        }
+
+        @Override
+        public String describe() {
+            return "Removing Atomic Reshaper recipe with input " + stack.getDisplayName();
+        }
+    }
+
+    @ZenMethod
+    public static void removeRecipe(IOreDictEntry in) {
+        if (in == null) throw new IllegalArgumentException("Input cannot be null");
+        CraftTweakerAPI.apply(new RemoveOre(in.getName()));
+    }
+
+    private static class RemoveOre implements IAction {
+        private final String ore;
+
+        public RemoveOre(String ore) {
+            this.ore = ore;
+        }
+
+        @Override
+        public void apply() {
+            AtomicReshaperManager.INSTANCE.removeOreRecipe(ore);
+        }
+
+        @Override
+        public String describe() {
+            return "Removing Atomic Reshaper recipe with input " + ore;
+        }
+    }
+
+    @ZenMethod
+    public static void removeAll() {
+        CraftTweakerAPI.apply(new RemoveAll());
+    }
+
+    private static class RemoveAll implements IAction {
+        @Override
+        public void apply() {
+            AtomicReshaperManager.INSTANCE.removeAll();
+        }
+
+        @Override
+        public String describe() {
+            return "Removing all Atomic Reshaper recipes";
+        }
+    }
 }

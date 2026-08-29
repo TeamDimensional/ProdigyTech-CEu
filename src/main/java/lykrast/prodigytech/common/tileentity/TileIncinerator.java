@@ -8,119 +8,103 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class TileIncinerator extends TileHotAirMachineSimple {
     public TileIncinerator() {
-		super(0.8F);
-	}
-
-	@Override
-	public String getName() {
-		return super.getName() + "incinerator";
-	}
-    
-    @Override
-	protected boolean canProcess()
-    {
-    	return (!getStackInSlot(0).isEmpty() && hotAir.getInAirTemperature() >= 80);
+        super(0.8F);
     }
-	
-	@Override
-	protected int getProcessSpeed()
-	{
-		return hotAir.getInAirTemperature() / 8;
-	}
 
-	@Override
-	public void update() {
+    @Override
+    public String getName() {
+        return super.getName() + "incinerator";
+    }
+
+    @Override
+    protected boolean canProcess() {
+        return (!getStackInSlot(0).isEmpty() && hotAir.getInAirTemperature() >= 80);
+    }
+
+    @Override
+    protected int getProcessSpeed() {
+        return hotAir.getInAirTemperature() / 8;
+    }
+
+    @Override
+    public void update() {
         boolean flag = this.isProcessing();
         boolean flag1 = false;
-        
+
         process();
-        
-        if (!this.world.isRemote)
-        {
-        	hotAir.updateInTemperature(world, pos);
-        	
-        	if (canProcess())
-        	{
-            	if (processTimeMax <= 0)
-            	{
-            		processTimeMax = Config.incineratorProcessTime * 10;
-            		processTime = processTimeMax;
-            	}
-            	else if (processTime <= 0)
-            	{
-            		incinerate();
-            		flag1 = true;
-            		
-            		if (canProcess())
-            		{
-            			processTimeMax = Config.incineratorProcessTime * 10;
-                		processTime = processTimeMax;
-            		}
-            		else
-            		{
-            			processTimeMax = 0;
-            			processTime = 0;
-            		}
-            	}
-        	}
-        	else if (processTime >= processTimeMax)
-    		{
-    			processTimeMax = 0;
-    			processTime = 0;
-    		}
-        	
-        	hotAir.updateOutTemperature();
-        	
-            if (flag != this.isProcessing())
-            {
+
+        if (!this.world.isRemote) {
+            hotAir.updateInTemperature(world, pos);
+
+            if (canProcess()) {
+                if (processTimeMax <= 0) {
+                    processTimeMax = Config.incineratorProcessTime * 10;
+                    processTime = processTimeMax;
+                } else if (processTime <= 0) {
+                    incinerate();
+                    flag1 = true;
+
+                    if (canProcess()) {
+                        processTimeMax = Config.incineratorProcessTime * 10;
+                        processTime = processTimeMax;
+                    } else {
+                        processTimeMax = 0;
+                        processTime = 0;
+                    }
+                }
+            } else if (processTime >= processTimeMax) {
+                processTimeMax = 0;
+                processTime = 0;
+            }
+
+            hotAir.updateOutTemperature();
+
+            if (flag != this.isProcessing()) {
                 flag1 = true;
                 BlockMachineActiveable.setState(this.isProcessing(), this.world, this.pos);
             }
         }
 
-        if (flag1)
-        {
+        if (flag1) {
             this.markDirty();
         }
-	}
-	
-	private void incinerate()
-	{
-		getStackInSlot(0).shrink(1);
-		
-		if (world.rand.nextFloat() < Config.incineratorChance)
-		{
-			ItemStack output = getStackInSlot(1);
-			
-			if (output.isEmpty()) {
-				ItemStack result = new ItemStack(ModItems.ash);
-				setInventorySlotContents(1, result);
-			} else if (isAsh(output) && output.getCount() < output.getMaxStackSize()) {
-				output.grow(1);
-			}
-		}
-	}
+    }
 
-	private boolean isAsh(ItemStack output) {
-		if (output == null || output.isEmpty()) {
-			return false;
-		}
-		if (output.getItem() == ModItems.ash) {
-			return true;
-		}
-		// A mod such as Unidict can redirect creation of Ash to another mod's Ash, we should also redirect ours.
-		for (int oreDict : OreDictionary.getOreIDs(output)) {
-			if (oreDict == OreDictionary.getOreID("dustAsh")) {
-				return true;
-			}
-		}
-		return false;
-	}
+    private void incinerate() {
+        getStackInSlot(0).shrink(1);
 
-	@Override
-	public boolean isItemValidForSlot(int index, ItemStack stack) {
-		if (index == 0) return true;
-		else return false;
-	}
+        if (world.rand.nextFloat() < Config.incineratorChance) {
+            ItemStack output = getStackInSlot(1);
 
+            if (output.isEmpty()) {
+                ItemStack result = new ItemStack(ModItems.ash);
+                setInventorySlotContents(1, result);
+            } else if (isAsh(output) && output.getCount() < output.getMaxStackSize()) {
+                output.grow(1);
+            }
+        }
+    }
+
+    private boolean isAsh(ItemStack output) {
+        if (output == null || output.isEmpty()) {
+            return false;
+        }
+        if (output.getItem() == ModItems.ash) {
+            return true;
+        }
+        // A mod such as Unidict can redirect creation of Ash to another mod's Ash, we should also
+        // redirect ours.
+        for (int oreDict : OreDictionary.getOreIDs(output)) {
+            if (oreDict == OreDictionary.getOreID("dustAsh")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isItemValidForSlot(int index, ItemStack stack) {
+        if (index == 0) return true;
+        else return false;
+    }
 }

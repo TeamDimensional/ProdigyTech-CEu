@@ -5,15 +5,14 @@ import net.minecraft.inventory.Container;
 
 public abstract class GuiInventory extends GuiContainer {
 
-	public GuiInventory(Container inventorySlotsIn) {
-		super(inventorySlotsIn);
-	}
+    public GuiInventory(Container inventorySlotsIn) {
+        super(inventorySlotsIn);
+    }
 
-	@Override
-	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		this.drawDefaultBackground();
-		super.drawScreen(mouseX, mouseY, partialTicks);
-		this.renderHoveredToolTip(mouseX, mouseY);
-	}
-
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        this.drawDefaultBackground();
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        this.renderHoveredToolTip(mouseX, mouseY);
+    }
 }

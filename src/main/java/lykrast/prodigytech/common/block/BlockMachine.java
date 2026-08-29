@@ -16,78 +16,76 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public abstract class BlockMachine<T extends TileEntity> extends BlockHorizontal implements ITileEntityProvider {
-	private Class<T> tileClass;
-	
-	public BlockMachine(Material materialIn, Class<T> tile) {
-		super(materialIn);
-		tileClass = tile;
-	}
+    private Class<T> tileClass;
 
-	public BlockMachine(Material materialIn, MapColor colorIn) {
-		super(materialIn, colorIn);
-	}
-
-	protected T getTileEntity(IBlockAccess world, BlockPos pos) {
-		TileEntity tile = world.getTileEntity(pos);
-		if (tileClass.isInstance(tile)) return tileClass.cast(tile);
-		else return null;
-	}
-
-	@Override
-	public abstract TileEntity createNewTileEntity(World worldIn, int meta);
-
-    /**
-     * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
-     * IBlockstate
-     */
-    @Override
-	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-    {
-        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
+    public BlockMachine(Material materialIn, Class<T> tile) {
+        super(materialIn);
+        tileClass = tile;
     }
 
+    public BlockMachine(Material materialIn, MapColor colorIn) {
+        super(materialIn, colorIn);
+    }
+
+    protected T getTileEntity(IBlockAccess world, BlockPos pos) {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tileClass.isInstance(tile)) return tileClass.cast(tile);
+        else return null;
+    }
+
+    @Override
+    public abstract TileEntity createNewTileEntity(World worldIn, int meta);
+
     /**
-     * Convert the given metadata into a BlockState for this Block
+     * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments
+     * to the IBlockstate
      */
     @Override
-	public IBlockState getStateFromMeta(int meta)
-    {
+    public IBlockState getStateForPlacement(
+            World worldIn,
+            BlockPos pos,
+            EnumFacing facing,
+            float hitX,
+            float hitY,
+            float hitZ,
+            int meta,
+            EntityLivingBase placer) {
+        return this.getDefaultState()
+                .withProperty(FACING, placer.getHorizontalFacing().getOpposite());
+    }
+
+    /** Convert the given metadata into a BlockState for this Block */
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
         return this.getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta));
     }
 
-    /**
-     * Convert the BlockState into the correct metadata value
-     */
+    /** Convert the BlockState into the correct metadata value */
     @Override
-	public int getMetaFromState(IBlockState state)
-    {
-        return ((EnumFacing)state.getValue(FACING)).getHorizontalIndex();
-    }
-	
-	/**
-     * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed
-     * blockstate.
-     */
-    @Override
-	public IBlockState withRotation(IBlockState state, Rotation rot)
-    {
-        return state.withProperty(FACING, rot.rotate((EnumFacing)state.getValue(FACING)));
+    public int getMetaFromState(IBlockState state) {
+        return ((EnumFacing) state.getValue(FACING)).getHorizontalIndex();
     }
 
     /**
-     * Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed
-     * blockstate.
+     * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable,
+     * returns the passed blockstate.
      */
     @Override
-	public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
-    {
-        return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
+    public IBlockState withRotation(IBlockState state, Rotation rot) {
+        return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
+    }
+
+    /**
+     * Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns
+     * the passed blockstate.
+     */
+    @Override
+    public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
+        return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(FACING)));
     }
 
     @Override
-	protected BlockStateContainer createBlockState()
-    {
+    protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, FACING);
     }
-
 }

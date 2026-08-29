@@ -10,22 +10,21 @@ import net.minecraft.world.World;
 public class BlockPrimordialisReactor extends BlockHotAirMachine<TilePrimordialisReactor> implements ICustomItemBlock {
 
     public BlockPrimordialisReactor(float hardness, float resistance, int harvestLevel) {
-		super(hardness, resistance, harvestLevel, TilePrimordialisReactor.class);
-	}
+        super(hardness, resistance, harvestLevel, TilePrimordialisReactor.class);
+    }
 
-	@Override
-	protected int getGuiID() {
-		return ProdigyTechGuiHandler.PRIMORDIALIS_REACTOR;
-	}
+    @Override
+    protected int getGuiID() {
+        return ProdigyTechGuiHandler.PRIMORDIALIS_REACTOR;
+    }
 
-	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TilePrimordialisReactor();
-	}
+    @Override
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TilePrimordialisReactor();
+    }
 
-	@Override
-	public ItemBlock getItemBlock() {
-		return new ItemBlockMachineHotAir(this, 250, 50);
-	}
-
+    @Override
+    public ItemBlock getItemBlock() {
+        return new ItemBlockMachineHotAir(this, 250, 50);
+    }
 }

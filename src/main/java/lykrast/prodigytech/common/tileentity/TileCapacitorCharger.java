@@ -17,70 +17,71 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 public class TileCapacitorCharger extends TileMachineInventory implements ITickable, IProcessing {
-	private int progressCycle;
-	private int targetTemperature;
-	private HotAirMachine hotAir;
-	
-	public TileCapacitorCharger() {
-		super(1);
-		hotAir = new HotAirMachine(this, 0) {
-			@Override
-			public int getOutAirTemperature() {
-				return 0;
-			}
-		};
-	}
+    private int progressCycle;
+    private int targetTemperature;
+    private HotAirMachine hotAir;
 
-	@Override
-	public String getName() {
-		return super.getName() + "capacitor_charger";
-	}
-
-	@Override
-	public boolean isItemValidForSlot(int index, ItemStack stack) {
-		if (index == 0) return stack.getItem() instanceof IHeatCapacitor && ((IHeatCapacitor)stack.getItem()).isChargeable(stack);
-		else return false;
-	}
-    
-	private boolean canProcess() {
-    	ItemStack capacitor = getStackInSlot(0);
-    	if (capacitor.isEmpty()) return false;
-
-		IHeatCapacitor casted = (IHeatCapacitor)capacitor.getItem();
-		if (casted.isFullyCharged(capacitor)) return false;
-		
-		targetTemperature = casted.getTargetTemperature(capacitor);
-    	return hotAir.getInAirTemperature() >= targetTemperature;
+    public TileCapacitorCharger() {
+        super(1);
+        hotAir = new HotAirMachine(this, 0) {
+            @Override
+            public int getOutAirTemperature() {
+                return 0;
+            }
+        };
     }
 
-	@Override
-	public void update() {
+    @Override
+    public String getName() {
+        return super.getName() + "capacitor_charger";
+    }
+
+    @Override
+    public boolean isItemValidForSlot(int index, ItemStack stack) {
+        if (index == 0)
+            return stack.getItem() instanceof IHeatCapacitor && ((IHeatCapacitor) stack.getItem()).isChargeable(stack);
+        else return false;
+    }
+
+    private boolean canProcess() {
+        ItemStack capacitor = getStackInSlot(0);
+        if (capacitor.isEmpty()) return false;
+
+        IHeatCapacitor casted = (IHeatCapacitor) capacitor.getItem();
+        if (casted.isFullyCharged(capacitor)) return false;
+
+        targetTemperature = casted.getTargetTemperature(capacitor);
+        return hotAir.getInAirTemperature() >= targetTemperature;
+    }
+
+    @Override
+    public void update() {
         boolean wasProcessing = isProcessing();
         boolean shouldDirty = false;
-        
+
         process();
-        
+
         if (!world.isRemote) {
-        	hotAir.updateInTemperature(world, pos);
-    		
-        	if (canProcess()) {
-        		//Cycle hasn't started, start it
-            	if (progressCycle <= 0) progressCycle = 1;
-            	//Cycle has finished
-            	else if (progressCycle > Config.capacitorChargerChargeTime * 10) {
-                	ItemStack capacitor = getStackInSlot(0);
-					((IHeatCapacitor)capacitor.getItem()).charge(capacitor, 20);
-            		shouldDirty = true;
-            		
-            		//Start the next one if possible
-            		if (canProcess()) progressCycle = 1;
-            	}
-        	}
-        	//Can't process, stop the current cycle
-        	else if (progressCycle > 0) progressCycle = 0;
-        	
-        	hotAir.updateOutTemperature();
-        	
+            hotAir.updateInTemperature(world, pos);
+
+            if (canProcess()) {
+                // Cycle hasn't started, start it
+                if (progressCycle <= 0) progressCycle = 1;
+                // Cycle has finished
+                else if (progressCycle > Config.capacitorChargerChargeTime * 10) {
+                    ItemStack capacitor = getStackInSlot(0);
+                    ((IHeatCapacitor) capacitor.getItem()).charge(capacitor, 20);
+                    shouldDirty = true;
+
+                    // Start the next one if possible
+                    if (canProcess()) progressCycle = 1;
+                }
+            }
+            // Can't process, stop the current cycle
+            else if (progressCycle > 0) progressCycle = 0;
+
+            hotAir.updateOutTemperature();
+
             if (wasProcessing != isProcessing()) {
                 shouldDirty = true;
                 BlockMachineActiveable.setState(isProcessing(), world, pos);
@@ -88,111 +89,105 @@ public class TileCapacitorCharger extends TileMachineInventory implements ITicka
         }
 
         if (shouldDirty) markDirty();
-	}
-	
-	private int getProcessSpeed() {
-		if (targetTemperature <= 30) return 10;
-		return 10 * hotAir.getInAirTemperature() / targetTemperature;
-	}
+    }
 
-	@Override
-	public boolean isProcessing() {
-		return progressCycle > 0;
-	}
-	
-	@Override
-	public int getProgressLeft() {
-		ItemStack stack = getStackInSlot(0);
-		if (stack.isEmpty()) return 0;
-		IHeatCapacitor capacitor = ((IHeatCapacitor)stack.getItem());
-		return capacitor.getMaxCharge(stack) - capacitor.getChargeLeft(stack);
-	}
-	
-	@Override
-	public int getMaxProgress() {
-		ItemStack stack = getStackInSlot(0);
-		return stack.isEmpty() ? 0 : ((IHeatCapacitor)stack.getItem()).getMaxCharge(stack);
-	}
-
-    @SideOnly(Side.CLIENT)
-	public static boolean isProcessing(IInventory inventory) {
-		return inventory.getField(0) > 0;
-	}
-	
-	private void process() {
-		if (isProcessing()) {
-			if (canProcess()) progressCycle += getProcessSpeed();
-			else progressCycle = 0;
-		}
-	}
-
-	@Override
-	public int getField(int id) {
-	    switch (id)
-	    {
-	        case 0:
-	            return progressCycle;
-	        case 1:
-	            return targetTemperature;
-	        case 2:
-	            return hotAir.getInAirTemperature();
-	        default:
-	            return 0;
-	    }
-	}
-
-	@Override
-	public void setField(int id, int value) {
-	    switch (id)
-	    {
-	        case 0:
-	            progressCycle = value;
-	            break;
-	        case 1:
-	        	targetTemperature = value;
-	            break;
-	        case 2:
-	            hotAir.setTemperature(value);
-	            break;
-	    }
-	}
-
-	@Override
-	public int getFieldCount() {
-	    return 3;
-	}
-
-	@Override
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-		if(capability==CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing != EnumFacing.DOWN)
-			return true;
-		if(capability==CapabilityHotAir.HOT_AIR && facing == null)
-			return true;
-		return super.hasCapability(capability, facing);
-	}
-
-	private ProdigyInventoryHandler invHandler = new ProdigyInventoryHandler(this, 1, 0, true, true) {
-		@Override
-		public boolean canExtract(int slot) {
-			ItemStack stack = getStackInSlot(slot);
-			if (stack.isEmpty()) return true;
-			return super.canExtract(slot) && ((IHeatCapacitor)stack.getItem()).isFullyCharged(stack);
-		}
-	};
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		if(capability==CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing != EnumFacing.DOWN)
-			return (T)invHandler;
-		if(capability==CapabilityHotAir.HOT_AIR && facing == null)
-			return (T)hotAir;
-		return super.getCapability(capability, facing);
-	}
+    private int getProcessSpeed() {
+        if (targetTemperature <= 30) return 10;
+        return 10 * hotAir.getInAirTemperature() / targetTemperature;
+    }
 
     @Override
-	public void readFromNBT(NBTTagCompound compound)
-    {
+    public boolean isProcessing() {
+        return progressCycle > 0;
+    }
+
+    @Override
+    public int getProgressLeft() {
+        ItemStack stack = getStackInSlot(0);
+        if (stack.isEmpty()) return 0;
+        IHeatCapacitor capacitor = ((IHeatCapacitor) stack.getItem());
+        return capacitor.getMaxCharge(stack) - capacitor.getChargeLeft(stack);
+    }
+
+    @Override
+    public int getMaxProgress() {
+        ItemStack stack = getStackInSlot(0);
+        return stack.isEmpty() ? 0 : ((IHeatCapacitor) stack.getItem()).getMaxCharge(stack);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static boolean isProcessing(IInventory inventory) {
+        return inventory.getField(0) > 0;
+    }
+
+    private void process() {
+        if (isProcessing()) {
+            if (canProcess()) progressCycle += getProcessSpeed();
+            else progressCycle = 0;
+        }
+    }
+
+    @Override
+    public int getField(int id) {
+        switch (id) {
+            case 0:
+                return progressCycle;
+            case 1:
+                return targetTemperature;
+            case 2:
+                return hotAir.getInAirTemperature();
+            default:
+                return 0;
+        }
+    }
+
+    @Override
+    public void setField(int id, int value) {
+        switch (id) {
+            case 0:
+                progressCycle = value;
+                break;
+            case 1:
+                targetTemperature = value;
+                break;
+            case 2:
+                hotAir.setTemperature(value);
+                break;
+        }
+    }
+
+    @Override
+    public int getFieldCount() {
+        return 3;
+    }
+
+    @Override
+    public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing != EnumFacing.DOWN) return true;
+        if (capability == CapabilityHotAir.HOT_AIR && facing == null) return true;
+        return super.hasCapability(capability, facing);
+    }
+
+    private ProdigyInventoryHandler invHandler = new ProdigyInventoryHandler(this, 1, 0, true, true) {
+        @Override
+        public boolean canExtract(int slot) {
+            ItemStack stack = getStackInSlot(slot);
+            if (stack.isEmpty()) return true;
+            return super.canExtract(slot) && ((IHeatCapacitor) stack.getItem()).isFullyCharged(stack);
+        }
+    };
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing != EnumFacing.DOWN)
+            return (T) invHandler;
+        if (capability == CapabilityHotAir.HOT_AIR && facing == null) return (T) hotAir;
+        return super.getCapability(capability, facing);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         progressCycle = compound.getInteger("ProgressCycle");
         targetTemperature = compound.getInteger("TargetTemperature");
@@ -200,8 +195,7 @@ public class TileCapacitorCharger extends TileMachineInventory implements ITicka
     }
 
     @Override
-	public NBTTagCompound writeToNBT(NBTTagCompound compound)
-    {
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         compound.setInteger("ProgressCycle", progressCycle);
         compound.setInteger("TargetTemperature", targetTemperature);
@@ -209,5 +203,4 @@ public class TileCapacitorCharger extends TileMachineInventory implements ITicka
 
         return compound;
     }
-
 }

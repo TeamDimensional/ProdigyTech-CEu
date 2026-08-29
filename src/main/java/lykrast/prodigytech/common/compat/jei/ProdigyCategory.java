@@ -8,33 +8,31 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.resources.I18n;
 
 public abstract class ProdigyCategory<T extends IRecipeWrapper> implements IRecipeCategory<T> {
-	private final IDrawable background;
-	private final String id;
+    private final IDrawable background;
+    private final String id;
 
-	public ProdigyCategory(IGuiHelper guiHelper, IDrawable gui, String id)
-	{
-		this.id = id;
-		background = gui;
-	}
+    public ProdigyCategory(IGuiHelper guiHelper, IDrawable gui, String id) {
+        this.id = id;
+        background = gui;
+    }
 
-	@Override
-	public String getUid() {
-		return id;
-	}
+    @Override
+    public String getUid() {
+        return id;
+    }
 
-	@Override
-	public String getTitle() {
-		return I18n.format("container." + ProdigyTech.MODID + ".jei." + id);
-	}
+    @Override
+    public String getTitle() {
+        return I18n.format("container." + ProdigyTech.MODID + ".jei." + id);
+    }
 
-	@Override
-	public String getModName() {
-		return ProdigyTech.MODID;
-	}
+    @Override
+    public String getModName() {
+        return ProdigyTech.MODID;
+    }
 
-	@Override
-	public IDrawable getBackground() {
-		return background;
-	}
-
+    @Override
+    public IDrawable getBackground() {
+        return background;
+    }
 }

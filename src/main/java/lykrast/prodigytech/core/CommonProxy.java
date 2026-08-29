@@ -1,7 +1,6 @@
 package lykrast.prodigytech.core;
 
 import java.io.File;
-
 import lykrast.prodigytech.common.capability.CapabilityHotAir;
 import lykrast.prodigytech.common.compat.ProdigyTechTOP;
 import lykrast.prodigytech.common.gui.ProdigyTechGuiHandler;
@@ -18,42 +17,43 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 
 public class CommonProxy {
-	public static Configuration config;
-	
-	public SimpleNetworkWrapper createNetworkChannel() {
-		SimpleNetworkWrapper channel = NetworkRegistry.INSTANCE.newSimpleChannel(ProdigyTech.MODID);
-		return channel;
-	}
-	
-	public void preInit(FMLPreInitializationEvent e) {
-		File directory = e.getModConfigurationDirectory();
+    public static Configuration config;
+
+    public SimpleNetworkWrapper createNetworkChannel() {
+        SimpleNetworkWrapper channel = NetworkRegistry.INSTANCE.newSimpleChannel(ProdigyTech.MODID);
+        return channel;
+    }
+
+    public void preInit(FMLPreInitializationEvent e) {
+        File directory = e.getModConfigurationDirectory();
         config = new Configuration(new File(directory.getPath(), "prodigy_tech.cfg"));
         Config.readConfig();
-        
+
         NetworkRegistry.INSTANCE.registerGuiHandler(ProdigyTech.instance, new ProdigyTechGuiHandler());
         CapabilityHotAir.register();
-        
-        if (Loader.isModLoaded("theoneprobe")) FMLInterModComms.sendFunctionMessage("theoneprobe", "getTheOneProbe", ProdigyTechTOP.class.getName());
-	}
 
-	public void init(FMLInitializationEvent e) {
-		//ItemMysteryTreat.initEffects();
-		ZorraAltarManager.init();
-	}
+        if (Loader.isModLoaded("theoneprobe"))
+            FMLInterModComms.sendFunctionMessage("theoneprobe", "getTheOneProbe", ProdigyTechTOP.class.getName());
+    }
 
-	public void postInit(FMLPostInitializationEvent e) {
-		//So it turns out there are several mods that do not follow proper etiquette of when to register oredicts
-		//So that got moved from the Manager's init in order to work
-		HeatSawmillManager.INSTANCE.registerPlanks();
-		
-		/* Current list of known misbehaviors:
-		 * Integrated Dynamics
-		 * Forestry
-		 * Project Vibrant: Journey
-		 * Traverse
-		 * GregTech: Community Edition (correct event but waits on LOW priority to scoop up the other mods)
-		 */
-		
-	}
+    public void init(FMLInitializationEvent e) {
+        // ItemMysteryTreat.initEffects();
+        ZorraAltarManager.init();
+    }
 
+    public void postInit(FMLPostInitializationEvent e) {
+        // So it turns out there are several mods that do not follow proper etiquette of when to
+        // register oredicts
+        // So that got moved from the Manager's init in order to work
+        HeatSawmillManager.INSTANCE.registerPlanks();
+
+        /* Current list of known misbehaviors:
+         * Integrated Dynamics
+         * Forestry
+         * Project Vibrant: Journey
+         * Traverse
+         * GregTech: Community Edition (correct event but waits on LOW priority to scoop up the other mods)
+         */
+
+    }
 }

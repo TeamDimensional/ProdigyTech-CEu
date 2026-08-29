@@ -10,22 +10,21 @@ import net.minecraft.world.World;
 public class BlockAeroheaterSolid extends BlockHotAirMachine<TileAeroheaterSolid> implements ICustomItemBlock {
 
     public BlockAeroheaterSolid(float hardness, float resistance, int harvestLevel) {
-		super(hardness, resistance, harvestLevel, TileAeroheaterSolid.class);
-	}
+        super(hardness, resistance, harvestLevel, TileAeroheaterSolid.class);
+    }
 
-	@Override
-	protected int getGuiID() {
-		return ProdigyTechGuiHandler.AEROHEATER_SOLID;
-	}
+    @Override
+    protected int getGuiID() {
+        return ProdigyTechGuiHandler.AEROHEATER_SOLID;
+    }
 
-	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileAeroheaterSolid();
-	}
+    @Override
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TileAeroheaterSolid();
+    }
 
-	@Override
-	public ItemBlock getItemBlock() {
-		return new ItemBlockAeroheater(this, 200);
-	}
-
+    @Override
+    public ItemBlock getItemBlock() {
+        return new ItemBlockAeroheater(this, 200);
+    }
 }

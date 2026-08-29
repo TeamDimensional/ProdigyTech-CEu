@@ -10,22 +10,21 @@ import net.minecraft.world.World;
 public class BlockHeatSawmill extends BlockHotAirMachine<TileHeatSawmill> implements ICustomItemBlock {
 
     public BlockHeatSawmill(float hardness, float resistance, int harvestLevel) {
-		super(hardness, resistance, harvestLevel, TileHeatSawmill.class);
-	}
+        super(hardness, resistance, harvestLevel, TileHeatSawmill.class);
+    }
 
-	@Override
-	protected int getGuiID() {
-		return ProdigyTechGuiHandler.HEAT_SAWMILL;
-	}
+    @Override
+    protected int getGuiID() {
+        return ProdigyTechGuiHandler.HEAT_SAWMILL;
+    }
 
-	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileHeatSawmill();
-	}
+    @Override
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TileHeatSawmill();
+    }
 
-	@Override
-	public ItemBlock getItemBlock() {
-		return new ItemBlockMachineHotAir(this, 80, 80);
-	}
-
+    @Override
+    public ItemBlock getItemBlock() {
+        return new ItemBlockMachineHotAir(this, 80, 80);
+    }
 }

@@ -7,16 +7,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 
 public class CreativeTabsMysteryTreats extends CreativeTabs {
-	
-	//public static final CreativeTabs INSTANCE = new CreativeTabsMysteryTreats(CreativeTabs.getNextID(), "ptmysterytreats");
 
-	public CreativeTabsMysteryTreats(int index, String label) {
-		super(index, label);
-	}
+    // public static final CreativeTabs INSTANCE = new
+    // CreativeTabsMysteryTreats(CreativeTabs.getNextID(), "ptmysterytreats");
 
-	@Override
-	public ItemStack createIcon() {
-		return ItemMysteryTreat.createWithEffect(new PotionEffect(MobEffects.SPEED), new PotionEffect(MobEffects.RESISTANCE));
-	}
+    public CreativeTabsMysteryTreats(int index, String label) {
+        super(index, label);
+    }
 
+    @Override
+    public ItemStack createIcon() {
+        return ItemMysteryTreat.createWithEffect(
+                new PotionEffect(MobEffects.SPEED), new PotionEffect(MobEffects.RESISTANCE));
+    }
 }

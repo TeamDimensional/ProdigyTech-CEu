@@ -10,22 +10,21 @@ import net.minecraft.world.World;
 public class BlockFoodEnricher extends BlockHotAirMachine<TileFoodEnricher> implements ICustomItemBlock {
 
     public BlockFoodEnricher(float hardness, float resistance, int harvestLevel) {
-		super(hardness, resistance, harvestLevel, TileFoodEnricher.class);
-	}
+        super(hardness, resistance, harvestLevel, TileFoodEnricher.class);
+    }
 
-	@Override
-	protected int getGuiID() {
-		return ProdigyTechGuiHandler.FOOD_ENRICHER;
-	}
+    @Override
+    protected int getGuiID() {
+        return ProdigyTechGuiHandler.FOOD_ENRICHER;
+    }
 
-	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileFoodEnricher();
-	}
+    @Override
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
+        return new TileFoodEnricher();
+    }
 
-	@Override
-	public ItemBlock getItemBlock() {
-		return new ItemBlockMachineHotAir(this, 125, 75);
-	}
-
+    @Override
+    public ItemBlock getItemBlock() {
+        return new ItemBlockMachineHotAir(this, 125, 75);
+    }
 }
