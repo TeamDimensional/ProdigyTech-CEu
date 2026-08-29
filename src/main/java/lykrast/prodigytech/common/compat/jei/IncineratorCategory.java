@@ -72,6 +72,9 @@ public class IncineratorCategory extends ProdigyCategory<IncineratorWrapper> {
 		if (mouseX >= 0 && mouseX < 16 && mouseY >= 4 && mouseY < 20) {
 			tooltips.add(I18n.format(ANY_ITEM));
 		}
+		if (mouseX >= 24 && mouseY >= 5 && mouseX <= 24 + arrow.getWidth() && mouseY <= 5 + arrow.getHeight()) {
+			tooltips.add(I18n.format("container.prodigytech.jei.base_time", Config.incineratorProcessTime));
+		}
 		return tooltips;
 	}
 

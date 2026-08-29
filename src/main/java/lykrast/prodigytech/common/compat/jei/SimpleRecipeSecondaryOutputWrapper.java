@@ -14,6 +14,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -22,6 +23,7 @@ public class SimpleRecipeSecondaryOutputWrapper implements IRecipeWrapper {
 	private List<ItemStack> out;
 	private final IDrawableAnimated arrow;
 	private int chance;
+	private int time;
 	
 	public SimpleRecipeSecondaryOutputWrapper(SimpleRecipeSecondaryOutput recipe, IGuiHelper guiHelper)
 	{
@@ -37,6 +39,7 @@ public class SimpleRecipeSecondaryOutputWrapper implements IRecipeWrapper {
 		in = Collections.singletonList(inputs);
 		out = ImmutableList.of(recipe.getOutput(), recipe.getSecondaryOutput());
 		chance = recipe.hasSecondaryOutput() ? (int)(recipe.getSecondaryChance() * 100) : 100;
+		time = recipe.getTimeTicks();
 		
 		arrow = guiHelper.createAnimatedDrawable(ProdigyTechJEI.getDefaultProcessArrow(guiHelper), recipe.getTimeTicks(), IDrawableAnimated.StartDirection.LEFT, false);
 	}
@@ -47,6 +50,15 @@ public class SimpleRecipeSecondaryOutputWrapper implements IRecipeWrapper {
 		ingredients.setOutputs(VanillaTypes.ITEM, out);
 	}
 	
+	@Override
+	public List<String> getTooltipStrings(int mouseX, int mouseY) {
+		if (mouseX >= 24 && mouseY >= 5 && mouseX <= 24 + arrow.getWidth() && mouseY <= 5 + arrow.getHeight()) {
+			List<String> list = new ArrayList<>();
+			list.add(I18n.format("container.prodigytech.jei.base_time", time));
+			return list;
+		} else return Collections.emptyList();
+	}
+
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 		arrow.draw(minecraft, 24, 5);

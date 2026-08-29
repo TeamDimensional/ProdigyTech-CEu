@@ -256,6 +256,7 @@ container.prodigytech.jei.ptreshaper=Atomic Reshaper
 container.prodigytech.jei.ptreshaper.chance=Chance: %d%%
 container.prodigytech.jei.ptreshaper.chance.low=Chance: < 1%%
 container.prodigytech.jei.ptincinerator.any_item=Accepts any item
+container.prodigytech.jei.base_time=Base time: %d ticks
 
 #----------------------------
 #Advancements

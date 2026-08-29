@@ -26,6 +26,7 @@ public class SoldererWrapper implements IRecipeWrapper, ITooltipCallback<ItemSta
 	private final IDrawableAnimated arrow;
 	private final IDrawable goldGauge;
 	private final InfusionCost cost;
+	private final int time;
 	
 	public SoldererWrapper(SoldererRecipe recipe, IGuiHelper guiHelper)
 	{
@@ -33,6 +34,7 @@ public class SoldererWrapper implements IRecipeWrapper, ITooltipCallback<ItemSta
 		additive = recipe.getAdditive();
 		output = recipe.getOutput();
 		cost = recipe.getInfusion();
+		time = recipe.getTimeTicks();
 		
 		arrow = guiHelper.createAnimatedDrawable(ProdigyTechJEI.getDefaultProcessArrow(guiHelper), recipe.getTimeTicks(), IDrawableAnimated.StartDirection.LEFT, false);
 		goldGauge = GuiInfusion.makeJEIDrawable(guiHelper, cost.getInfusionId(), cost.amount, Config.soldererCapacity);
@@ -60,14 +62,15 @@ public class SoldererWrapper implements IRecipeWrapper, ITooltipCallback<ItemSta
 	@Override
 	public List<String> getTooltipStrings(int mouseX, int mouseY)
 	{
-		if (mouseX >= 30 && mouseX <= 34)
-		{
+		if (mouseX >= 30 && mouseX <= 34) {
 			List<String> list = new ArrayList<>();
 			list.add(cost.localize());
-			
 			return list;
-		}
-		else return Collections.emptyList();
+		} else if (mouseX >= 60 && mouseY >= 19 && mouseX <= 60 + arrow.getWidth() && mouseY <= 19 + arrow.getHeight()) {
+			List<String> list = new ArrayList<>();
+			list.add(I18n.format("container.prodigytech.jei.base_time", time));
+			return list;
+		} else return Collections.emptyList();
 	}
 
 	@Override

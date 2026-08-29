@@ -30,7 +30,7 @@ public class AtomicReshaperWrapper implements IRecipeWrapper, ITooltipCallback<I
 	private List<List<ItemStack>> out;
 	private final IDrawableAnimated arrow;
 	private final IDrawable primordiumGauge;
-	private int totalWeight;
+	private int totalWeight, time;
 	private int[] weights;
 	private InfusionCost cost;
 	
@@ -56,6 +56,7 @@ public class AtomicReshaperWrapper implements IRecipeWrapper, ITooltipCallback<I
 		arrow = guiHelper.createAnimatedDrawable(guiHelper.createDrawable(GuiAtomicReshaper.GUI, 176, 0, 48, 17), recipe.getTimeTicks(), IDrawableAnimated.StartDirection.LEFT, false);
 
 		primordiumGauge = GuiInfusion.makeJEIDrawable(guiHelper, recipe.getCost().getInfusionId(), recipe.getCost().amount, 100);
+		time = recipe.getTimeTicks();
 	}
 
 	@Override
@@ -83,7 +84,11 @@ public class AtomicReshaperWrapper implements IRecipeWrapper, ITooltipCallback<I
 			list.add(cost.localize());
 			return list;
 		}
-		else return Collections.emptyList();
+		else if (mouseX >= 60 && mouseY >= 19 && mouseX <= 60 + arrow.getWidth() && mouseY <= 19 + arrow.getHeight()) {
+			List<String> list = new ArrayList<>();
+			list.add(I18n.format("container.prodigytech.jei.base_time", time));
+			return list;
+		} else return Collections.emptyList();
 	}
 
 	@Override
