@@ -1,13 +1,11 @@
 package lykrast.prodigytech.common.compat.groovyscript;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import com.cleanroommc.groovyscript.api.GroovyPlugin;
 import com.cleanroommc.groovyscript.compat.mods.GroovyContainer;
 import com.cleanroommc.groovyscript.compat.mods.GroovyPropertyContainer;
-
 import groovyjarjarantlr4.v4.runtime.misc.NotNull;
+import java.util.ArrayList;
+import java.util.Collection;
 import lykrast.prodigytech.core.ProdigyTech;
 
 public class ProdigyTechCEuPlugin implements GroovyPlugin {
@@ -32,8 +30,7 @@ public class ProdigyTechCEuPlugin implements GroovyPlugin {
     }
 
     @Override
-    public void onCompatLoaded(GroovyContainer<?> arg0) {
-    }
+    public void onCompatLoaded(GroovyContainer<?> arg0) {}
 
     @Override
     public @NotNull Priority getOverridePriority() {
@@ -47,5 +44,4 @@ public class ProdigyTechCEuPlugin implements GroovyPlugin {
         info.add("prodigytech_ceu");
         return info;
     }
-
 }

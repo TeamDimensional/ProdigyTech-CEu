@@ -1,12 +1,5 @@
 package lykrast.prodigytech.common.compat.groovyscript;
 
-import java.util.List;
-import java.util.Locale;
-
-import javax.annotation.Nullable;
-
-import org.apache.commons.lang3.NotImplementedException;
-
 import com.cleanroommc.groovyscript.api.GroovyLog;
 import com.cleanroommc.groovyscript.api.IIngredient;
 import com.cleanroommc.groovyscript.api.documentation.annotations.Admonition;
@@ -21,27 +14,37 @@ import com.cleanroommc.groovyscript.compat.mods.prodigytech.Solderer;
 import com.cleanroommc.groovyscript.helper.Alias;
 import com.cleanroommc.groovyscript.helper.ingredient.IngredientHelper;
 import com.cleanroommc.groovyscript.helper.recipe.AbstractRecipeBuilder;
-
+import java.util.List;
+import java.util.Locale;
+import javax.annotation.Nullable;
 import lykrast.prodigytech.common.recipe.Infusion;
 import lykrast.prodigytech.common.recipe.Infusion.InfusionCost;
 import lykrast.prodigytech.common.recipe.SoldererManager;
 import lykrast.prodigytech.common.util.Config;
 import net.minecraft.item.ItemStack;
+import org.apache.commons.lang3.NotImplementedException;
 
-@RegistryDescription(admonition = @Admonition(value = "groovyscript.wiki.prodigytech_ceu.must_use_builder", type = Admonition.Type.WARNING))
+@RegistryDescription(
+        admonition =
+                @Admonition(
+                        value = "groovyscript.wiki.prodigytech_ceu.must_use_builder",
+                        type = Admonition.Type.WARNING))
 public class SoldererOverride extends Solderer {
 
-    @RecipeBuilderDescription(example = {
-            @Example(".pattern(item('minecraft:clay')).input(item('minecraft:gold_ingot')).output(item('minecraft:diamond')).gold(5).time(100)"),
-            @Example(".pattern(item('minecraft:coal_block')).output(item('minecraft:nether_star')).gold(75)"),
-    })
+    @RecipeBuilderDescription(
+            example = {
+                @Example(
+                        ".pattern(item('minecraft:clay')).input(item('minecraft:gold_ingot')).output(item('minecraft:diamond')).gold(5).time(100)"),
+                @Example(".pattern(item('minecraft:coal_block')).output(item('minecraft:nether_star')).gold(75)"),
+            })
     public RecipeBuilder builder() {
         return new RecipeBuilder();
     }
 
     @Override
     public Solderer.RecipeBuilder recipeBuilder() {
-        throw new NotImplementedException("recipeBuilder() is currently not supported for Solderer, use builder() instead");
+        throw new NotImplementedException(
+                "recipeBuilder() is currently not supported for Solderer, use builder() instead");
     }
 
     @Override
@@ -107,7 +110,11 @@ public class SoldererOverride extends Solderer {
             msg.add(gold <= 0, "gold must be greater than or equal to 1, yet it was {}", gold);
             msg.add(IngredientHelper.isEmpty(pattern), "pattern cannot be empty");
             int capacity = Config.soldererCapacity;
-            msg.add(gold > capacity, "gold must be less than or equal to the Solderer's capacity {}, yet it was {}", capacity, gold);
+            msg.add(
+                    gold > capacity,
+                    "gold must be less than or equal to the Solderer's capacity {}, yet it was {}",
+                    capacity,
+                    gold);
             msg.add(time <= 0, "time must be greater than 0, got {}", time);
             Infusion data = Infusion.INFUSIONS.get(infusion);
             msg.add(data == null, "infusion {} is not registered", infusion);
@@ -121,12 +128,14 @@ public class SoldererOverride extends Solderer {
             SoldererManager.SoldererRecipe recipe = null;
             for (ItemStack pat : pattern.getMatchingStacks()) {
                 if (input.isEmpty()) {
-                    SoldererManager.SoldererRecipe theRecipe = new SoldererManager.SoldererRecipe(pat, ItemStack.EMPTY, output.get(0), new InfusionCost(infusion, gold), time);
+                    SoldererManager.SoldererRecipe theRecipe = new SoldererManager.SoldererRecipe(
+                            pat, ItemStack.EMPTY, output.get(0), new InfusionCost(infusion, gold), time);
                     SoldererOverride.this.add(theRecipe);
                     if (recipe != null) recipe = theRecipe;
                 } else {
                     for (ItemStack additive : input.get(0).getMatchingStacks()) {
-                        SoldererManager.SoldererRecipe theRecipe = new SoldererManager.SoldererRecipe(pat, additive, output.get(0), new InfusionCost(infusion, gold), time);
+                        SoldererManager.SoldererRecipe theRecipe = new SoldererManager.SoldererRecipe(
+                                pat, additive, output.get(0), new InfusionCost(infusion, gold), time);
                         SoldererOverride.this.add(theRecipe);
                         if (recipe != null) recipe = theRecipe;
                     }

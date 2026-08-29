@@ -1,11 +1,5 @@
 package lykrast.prodigytech.common.compat.groovyscript;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import javax.annotation.Nullable;
-
 import com.cleanroommc.groovyscript.api.GroovyLog.Msg;
 import com.cleanroommc.groovyscript.api.IIngredient;
 import com.cleanroommc.groovyscript.api.IScriptReloadable;
@@ -19,7 +13,10 @@ import com.cleanroommc.groovyscript.helper.ingredient.OreDictIngredient;
 import com.cleanroommc.groovyscript.helper.recipe.AbstractRecipeBuilder;
 import com.cleanroommc.groovyscript.registry.NamedRegistry;
 import com.google.common.collect.ImmutableList;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import javax.annotation.Nullable;
 import lykrast.prodigytech.common.recipe.Infusion;
 import lykrast.prodigytech.common.recipe.Infusion.InfusionItem;
 import lykrast.prodigytech.common.recipe.Infusion.InfusionNameDescriptor;
@@ -80,10 +77,12 @@ public class InfusionManager extends NamedRegistry implements IScriptReloadable 
         target.naming.addAll(source.naming);
     }
 
-    @RecipeBuilderDescription(example = {
-            @Example(".name('gold').machine('solderer', 'atomic_reshaper').input(item('minecraft:iron_ingot'))"),
-            @Example(".name('diamond').id(3).unlocalizedName('pack_infusion.diamond').unlocalizedName('pack_infusion.diamond_block', 90).machine('solderer').input(item('minecraft:obsidian')).input(item('minecraft:diamond'), 10)"),
-    })
+    @RecipeBuilderDescription(
+            example = {
+                @Example(".name('gold').machine('solderer', 'atomic_reshaper').input(item('minecraft:iron_ingot'))"),
+                @Example(
+                        ".name('diamond').id(3).unlocalizedName('pack_infusion.diamond').unlocalizedName('pack_infusion.diamond_block', 90).machine('solderer').input(item('minecraft:obsidian')).input(item('minecraft:diamond'), 10)"),
+            })
     public RecipeBuilder builder() {
         return new RecipeBuilder();
     }
@@ -193,7 +192,5 @@ public class InfusionManager extends NamedRegistry implements IScriptReloadable 
             msg.add(machines.isEmpty(), "machine list must not be empty");
             msg.add(items.isEmpty(), "item list must not be empty");
         }
-
     }
-    
 }

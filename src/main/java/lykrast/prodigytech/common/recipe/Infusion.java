@@ -234,7 +234,8 @@ public class Infusion {
 
     public Infusion(String name, int id, String unlocalizedName) {
         if (id <= 0) {
-            throw new IllegalArgumentException("InfusionId 0 is used for no infusion, choose a different positive number");
+            throw new IllegalArgumentException(
+                    "InfusionId 0 is used for no infusion, choose a different positive number");
         }
         this.name = name;
         this.id = id;
