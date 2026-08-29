@@ -4,6 +4,7 @@ import lykrast.prodigytech.common.block.BlockMachineActiveable;
 import lykrast.prodigytech.common.init.ModItems;
 import lykrast.prodigytech.common.util.Config;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 public class TileIncinerator extends TileHotAirMachineSimple {
     public TileIncinerator() {
@@ -89,18 +90,31 @@ public class TileIncinerator extends TileHotAirMachineSimple {
 		
 		if (world.rand.nextFloat() < Config.incineratorChance)
 		{
-			ItemStack result = new ItemStack(ModItems.ash);
 			ItemStack output = getStackInSlot(1);
 			
-			if (output.isEmpty())
-			{
+			if (output.isEmpty()) {
+				ItemStack result = new ItemStack(ModItems.ash);
 				setInventorySlotContents(1, result);
-			}
-			else if (output.isItemEqual(result))
-			{
-				output.grow(result.getCount());
+			} else if (isAsh(output) && output.getCount() < output.getMaxStackSize()) {
+				output.grow(1);
 			}
 		}
+	}
+
+	private boolean isAsh(ItemStack output) {
+		if (output == null || output.isEmpty()) {
+			return false;
+		}
+		if (output.getItem() == ModItems.ash) {
+			return true;
+		}
+		// A mod such as Unidict can redirect creation of Ash to another mod's Ash, we should also redirect ours.
+		for (int oreDict : OreDictionary.getOreIDs(output)) {
+			if (oreDict == OreDictionary.getOreID("dustAsh")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
