@@ -14,7 +14,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ContainerAtomicReshaper extends ContainerMachine<TileAtomicReshaper> {
     private int temperature;
     private int temperatureOut;
-    private int primordium;
+    private int primordium, infusionId;
     private int processTime;
     private int processTimeMax;
 
@@ -71,6 +71,10 @@ public class ContainerAtomicReshaper extends ContainerMachine<TileAtomicReshaper
                 icontainerlistener.sendWindowProperty(this, 4, tile.getField(4));
             }
 
+            if (infusionId != tile.getField(5)) {
+                icontainerlistener.sendWindowProperty(this, 5, tile.getField(5));
+            }
+
             if (processTime != tile.getField(0)) {
                 icontainerlistener.sendWindowProperty(this, 0, tile.getField(0));
             }
@@ -83,6 +87,7 @@ public class ContainerAtomicReshaper extends ContainerMachine<TileAtomicReshaper
         temperature = tile.getField(2);
         temperatureOut = tile.getField(3);
         primordium = tile.getField(4);
+        infusionId = tile.getField(5);
         processTime = tile.getField(0);
         processTimeMax = tile.getField(1);
     }

@@ -64,7 +64,7 @@ public class GuiSolderer extends GuiInventory {
         l = getFieldScaled(3, 17, 30, 125);
         this.drawTexturedModalRect(guiLeft + 82, guiTop + 16 + (17 - l), 176, 17 + (17 - l), 18, l + 1);
 
-        // Primordium
+        // Gold
         GuiInfusion.render(
                 this,
                 tile.getInfusionState().getInfusionId(),

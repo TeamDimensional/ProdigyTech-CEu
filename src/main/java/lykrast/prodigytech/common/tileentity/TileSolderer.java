@@ -111,8 +111,8 @@ public class TileSolderer extends TileMachineInventory implements ITickable, IPr
         if (!this.world.isRemote) {
             hotAir.updateInTemperature(world, pos);
 
-            if (state.add(Infusion.getInfusionOutput(MACHINE_NAME, getStackInSlot(0)), false)) {
-                getStackInSlot(0).shrink(1);
+            if (state.add(Infusion.getInfusionOutput(MACHINE_NAME, getStackInSlot(1)), false)) {
+                getStackInSlot(1).shrink(1);
                 flag1 = true;
             }
 

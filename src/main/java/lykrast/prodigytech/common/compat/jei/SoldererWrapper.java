@@ -81,7 +81,9 @@ public class SoldererWrapper implements IRecipeWrapper, ITooltipCallback<ItemSta
     public void onTooltip(int slotIndex, boolean input, ItemStack ingredient, List<String> tooltip) {
         if (slotIndex == 1) {
             int count = Infusion.INFUSIONS.get(cost.infusion).getOutputFor(ingredient);
-            tooltip.add(I18n.format(GuiInfusion.PROVIDES, count));
+            if (count > 1) {
+                tooltip.add(I18n.format(GuiInfusion.PROVIDES, count));
+            }
         }
     }
 }

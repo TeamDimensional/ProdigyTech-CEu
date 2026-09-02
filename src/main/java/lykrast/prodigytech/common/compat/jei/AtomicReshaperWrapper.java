@@ -100,7 +100,9 @@ public class AtomicReshaperWrapper implements IRecipeWrapper, ITooltipCallback<I
             else tooltip.add(I18n.format(CHANCE, chance));
         } else if (slotIndex == 0) {
             int count = Infusion.INFUSIONS.get(cost.infusion).getOutputFor(ingredient);
-            tooltip.add(I18n.format(GuiInfusion.PROVIDES, count));
+            if (count > 1) {
+                tooltip.add(I18n.format(GuiInfusion.PROVIDES, count));
+            }
         }
     }
 }
