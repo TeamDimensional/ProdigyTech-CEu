@@ -25,7 +25,8 @@ public class SoldererManager {
         return addRecipe(new SoldererRecipe(pattern, additive, output, gold, time));
     }
 
-    public static SoldererRecipe addRecipe(ItemStack pattern, ItemStack additive, ItemStack board, ItemStack output, InfusionCost gold) {
+    public static SoldererRecipe addRecipe(
+            ItemStack pattern, ItemStack additive, ItemStack board, ItemStack output, InfusionCost gold) {
         return addRecipe(new SoldererRecipe(pattern, additive, board, output, gold));
     }
 
@@ -58,7 +59,8 @@ public class SoldererManager {
         return recipe;
     }
 
-    public static SoldererRecipe findRecipe(ItemStack pattern, ItemStack additive, ItemStack board, InfusionState gold) {
+    public static SoldererRecipe findRecipe(
+            ItemStack pattern, ItemStack additive, ItemStack board, InfusionState gold) {
         for (SoldererRecipe recipe : RECIPES) if (recipe.isValidInput(pattern, additive, board, gold)) return recipe;
 
         return null;
@@ -70,7 +72,8 @@ public class SoldererManager {
         return null;
     }
 
-    public static SoldererRecipe removeRecipe(ItemStack pattern, ItemStack additive, ItemStack board, InfusionCost gold) {
+    public static SoldererRecipe removeRecipe(
+            ItemStack pattern, ItemStack additive, ItemStack board, InfusionCost gold) {
         SoldererRecipe recipe = findRecipe(pattern, additive, board, gold);
         if (recipe != null) RECIPES.remove(recipe);
 
@@ -102,8 +105,7 @@ public class SoldererManager {
     }
 
     public static boolean isPlate(ItemStack stack) {
-        for (SoldererRecipe recipe : RECIPES)
-            if (recipe.isValidPlate(stack)) return true;
+        for (SoldererRecipe recipe : RECIPES) if (recipe.isValidPlate(stack)) return true;
 
         return false;
     }
@@ -142,11 +144,13 @@ public class SoldererManager {
         private final int time;
         private final InfusionCost gold;
 
-        public SoldererRecipe(ItemStack pattern, ItemStack additive, ItemStack board, ItemStack output, InfusionCost gold) {
+        public SoldererRecipe(
+                ItemStack pattern, ItemStack additive, ItemStack board, ItemStack output, InfusionCost gold) {
             this(pattern, additive, board, output, gold, Config.soldererProcessTime);
         }
 
-        public SoldererRecipe(ItemStack pattern, ItemStack additive, ItemStack board, ItemStack output, InfusionCost gold, int time) {
+        public SoldererRecipe(
+                ItemStack pattern, ItemStack additive, ItemStack board, ItemStack output, InfusionCost gold, int time) {
             this.pattern = pattern;
             pattern.setCount(1);
             this.additive = additive;

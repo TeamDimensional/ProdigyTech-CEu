@@ -18,7 +18,6 @@ import com.cleanroommc.groovyscript.helper.recipe.AbstractRecipeBuilder;
 import java.util.List;
 import java.util.Locale;
 import javax.annotation.Nullable;
-
 import lykrast.prodigytech.common.init.ModItems;
 import lykrast.prodigytech.common.recipe.Infusion;
 import lykrast.prodigytech.common.recipe.Infusion.InfusionCost;
@@ -139,7 +138,9 @@ public class SoldererOverride extends Solderer {
             if (!validate()) return null;
             SoldererManager.SoldererRecipe recipe = null;
             for (ItemStack pat : pattern.getMatchingStacks()) {
-                IIngredient circuitBoard = this.circuitBoard == null ? new ItemsIngredient(new ItemStack(ModItems.circuitPlate)) : this.circuitBoard;
+                IIngredient circuitBoard = this.circuitBoard == null
+                        ? new ItemsIngredient(new ItemStack(ModItems.circuitPlate))
+                        : this.circuitBoard;
                 for (ItemStack board : circuitBoard.getMatchingStacks()) {
                     if (input.isEmpty()) {
                         SoldererManager.SoldererRecipe theRecipe = new SoldererManager.SoldererRecipe(

@@ -55,7 +55,13 @@ public class Solderer {
     // Add
     @ZenMethod
     public static void addRecipe(
-            IItemStack pattern, IItemStack additive, IItemStack board, IItemStack output, String infusion, int gold, @Optional int time) {
+            IItemStack pattern,
+            IItemStack additive,
+            IItemStack board,
+            IItemStack output,
+            String infusion,
+            int gold,
+            @Optional int time) {
         if (pattern == null) throw new IllegalArgumentException("Pattern cannot be null");
         if (output == null) throw new IllegalArgumentException("Output cannot be null");
         if (board == null) throw new IllegalArgumentException("Board cannot be null");
@@ -64,11 +70,13 @@ public class Solderer {
             throw new IllegalArgumentException("Recipe requires more Gold than the Solderer is configured to hold");
         if (time <= 0) time = Config.soldererProcessTime;
         validateInfusion(infusion);
-        CraftTweakerAPI.apply(new Add(recipe(pattern, additive, board, output, new InfusionCost(infusion, gold), time)));
+        CraftTweakerAPI.apply(
+                new Add(recipe(pattern, additive, board, output, new InfusionCost(infusion, gold), time)));
     }
 
     @ZenMethod
-    public static void addRecipe(IItemStack pattern, IItemStack board, IItemStack output, String infusion, int gold, @Optional int time) {
+    public static void addRecipe(
+            IItemStack pattern, IItemStack board, IItemStack output, String infusion, int gold, @Optional int time) {
         addRecipe(pattern, null, board, output, infusion, gold, time);
     }
 
