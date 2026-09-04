@@ -63,9 +63,9 @@ public class TileSolderer extends TileMachineInventory implements ITickable, IPr
 
     private void updateCachedRecipe() {
         if (cachedRecipe == null)
-            cachedRecipe = SoldererManager.findRecipe(getStackInSlot(0), getStackInSlot(2), state);
-        else if (!cachedRecipe.isValidInput(getStackInSlot(0), getStackInSlot(2), state)) {
-            cachedRecipe = SoldererManager.findRecipe(getStackInSlot(0), getStackInSlot(2), state);
+            cachedRecipe = SoldererManager.findRecipe(getStackInSlot(0), getStackInSlot(2), getStackInSlot(3), state);
+        else if (!cachedRecipe.isValidInput(getStackInSlot(0), getStackInSlot(2), getStackInSlot(3), state)) {
+            cachedRecipe = SoldererManager.findRecipe(getStackInSlot(0), getStackInSlot(2), getStackInSlot(3), state);
             // Recipe became invalid, restart the process
             processTimeMax = 0;
             processTime = 0;
@@ -163,7 +163,7 @@ public class TileSolderer extends TileMachineInventory implements ITickable, IPr
 
         if (cachedRecipe.requiresAdditive())
             getStackInSlot(2).shrink(cachedRecipe.getAdditive().getCount());
-        getStackInSlot(3).shrink(1);
+        getStackInSlot(3).shrink(cachedRecipe.getBoard().getCount());
         state.subtract(cachedRecipe.getInfusion(), false);
     }
 

@@ -4,6 +4,8 @@ import crafttweaker.CraftTweakerAPI;
 import crafttweaker.IAction;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.mc1120.item.MCItemStack;
+import lykrast.prodigytech.common.init.ModItems;
 import lykrast.prodigytech.common.recipe.Infusion;
 import lykrast.prodigytech.common.recipe.Infusion.InfusionCost;
 import lykrast.prodigytech.common.recipe.SoldererManager;
@@ -19,28 +21,25 @@ import stanhebben.zenscript.annotations.ZenMethod;
 public class Solderer {
     // Helpers
     private static SoldererRecipe recipe(
-            IItemStack pattern, IItemStack additive, IItemStack output, InfusionCost gold, int time) {
+            IItemStack pattern, IItemStack additive, IItemStack board, IItemStack output, InfusionCost gold, int time) {
         return new SoldererRecipe(
                 CraftTweakerHelper.toItemStack(pattern),
                 CraftTweakerHelper.toItemStack(additive),
+                CraftTweakerHelper.toItemStack(board),
                 CraftTweakerHelper.toItemStack(output),
                 gold,
                 time);
     }
 
-    private static SoldererRecipe recipe(IItemStack pattern, IItemStack output, InfusionCost gold, int time) {
-        return recipe(pattern, null, output, gold, time);
-    }
-
     @ZenMethod
     public static void addRecipe(
             IItemStack pattern, IItemStack additive, IItemStack output, int gold, @Optional int time) {
-        addRecipe(pattern, additive, output, "gold", gold, time);
+        addRecipe(pattern, additive, new MCItemStack(new ItemStack(ModItems.circuitPlate)), output, "gold", gold, time);
     }
 
     @ZenMethod
     public static void addRecipe(IItemStack pattern, IItemStack output, int gold, @Optional int time) {
-        addRecipe(pattern, output, "gold", gold, time);
+        addRecipe(pattern, null, new MCItemStack(new ItemStack(ModItems.circuitPlate)), output, "gold", gold, time);
     }
 
     private static void validateInfusion(String infusion) {
@@ -56,27 +55,21 @@ public class Solderer {
     // Add
     @ZenMethod
     public static void addRecipe(
-            IItemStack pattern, IItemStack additive, IItemStack output, String infusion, int gold, @Optional int time) {
+            IItemStack pattern, IItemStack additive, IItemStack board, IItemStack output, String infusion, int gold, @Optional int time) {
         if (pattern == null) throw new IllegalArgumentException("Pattern cannot be null");
         if (output == null) throw new IllegalArgumentException("Output cannot be null");
+        if (board == null) throw new IllegalArgumentException("Board cannot be null");
         if (gold <= 0) throw new IllegalArgumentException("Gold amount must be positive");
         else if (gold > Config.soldererCapacity)
             throw new IllegalArgumentException("Recipe requires more Gold than the Solderer is configured to hold");
         if (time <= 0) time = Config.soldererProcessTime;
         validateInfusion(infusion);
-        CraftTweakerAPI.apply(new Add(recipe(pattern, additive, output, new InfusionCost(infusion, gold), time)));
+        CraftTweakerAPI.apply(new Add(recipe(pattern, additive, board, output, new InfusionCost(infusion, gold), time)));
     }
 
     @ZenMethod
-    public static void addRecipe(IItemStack pattern, IItemStack output, String infusion, int gold, @Optional int time) {
-        if (pattern == null) throw new IllegalArgumentException("Pattern cannot be null");
-        if (output == null) throw new IllegalArgumentException("Output cannot be null");
-        if (gold <= 0) throw new IllegalArgumentException("Gold amount must be positive");
-        else if (gold > Config.soldererCapacity)
-            throw new IllegalArgumentException("Recipe requires more Gold than the Solderer is configured to hold");
-        validateInfusion(infusion);
-        if (time <= 0) time = Config.soldererProcessTime;
-        CraftTweakerAPI.apply(new Add(recipe(pattern, output, new InfusionCost(infusion, gold), time)));
+    public static void addRecipe(IItemStack pattern, IItemStack board, IItemStack output, String infusion, int gold, @Optional int time) {
+        addRecipe(pattern, null, board, output, infusion, gold, time);
     }
 
     private static class Add implements IAction {

@@ -13,10 +13,13 @@ import com.cleanroommc.groovyscript.api.documentation.annotations.RegistryDescri
 import com.cleanroommc.groovyscript.compat.mods.prodigytech.Solderer;
 import com.cleanroommc.groovyscript.helper.Alias;
 import com.cleanroommc.groovyscript.helper.ingredient.IngredientHelper;
+import com.cleanroommc.groovyscript.helper.ingredient.ItemsIngredient;
 import com.cleanroommc.groovyscript.helper.recipe.AbstractRecipeBuilder;
 import java.util.List;
 import java.util.Locale;
 import javax.annotation.Nullable;
+
+import lykrast.prodigytech.common.init.ModItems;
 import lykrast.prodigytech.common.recipe.Infusion;
 import lykrast.prodigytech.common.recipe.Infusion.InfusionCost;
 import lykrast.prodigytech.common.recipe.SoldererManager;
@@ -70,6 +73,9 @@ public class SoldererOverride extends Solderer {
         @Property(comp = @Comp(eq = 1))
         private IIngredient pattern;
 
+        @Property(comp = @Comp(eq = 1), defaultValue = "groovyscript.wiki.prodigytech_ceu.solderer_circuit_plate")
+        private IIngredient circuitBoard;
+
         @Property(comp = @Comp(unique = "groovyscript.wiki.prodigytech_ceu.solderer_infusion"))
         private String infusion = "gold";
 
@@ -95,6 +101,12 @@ public class SoldererOverride extends Solderer {
         @RecipeBuilderMethodDescription
         public RecipeBuilder pattern(IIngredient pattern) {
             this.pattern = pattern;
+            return this;
+        }
+
+        @RecipeBuilderMethodDescription
+        public RecipeBuilder circuitBoard(IIngredient circuitBoard) {
+            this.circuitBoard = circuitBoard;
             return this;
         }
 
@@ -127,17 +139,20 @@ public class SoldererOverride extends Solderer {
             if (!validate()) return null;
             SoldererManager.SoldererRecipe recipe = null;
             for (ItemStack pat : pattern.getMatchingStacks()) {
-                if (input.isEmpty()) {
-                    SoldererManager.SoldererRecipe theRecipe = new SoldererManager.SoldererRecipe(
-                            pat, ItemStack.EMPTY, output.get(0), new InfusionCost(infusion, gold), time);
-                    SoldererOverride.this.add(theRecipe);
-                    if (recipe != null) recipe = theRecipe;
-                } else {
-                    for (ItemStack additive : input.get(0).getMatchingStacks()) {
+                IIngredient circuitBoard = this.circuitBoard == null ? new ItemsIngredient(new ItemStack(ModItems.circuitPlate)) : this.circuitBoard;
+                for (ItemStack board : circuitBoard.getMatchingStacks()) {
+                    if (input.isEmpty()) {
                         SoldererManager.SoldererRecipe theRecipe = new SoldererManager.SoldererRecipe(
-                                pat, additive, output.get(0), new InfusionCost(infusion, gold), time);
+                                pat, ItemStack.EMPTY, board, output.get(0), new InfusionCost(infusion, gold), time);
                         SoldererOverride.this.add(theRecipe);
                         if (recipe != null) recipe = theRecipe;
+                    } else {
+                        for (ItemStack additive : input.get(0).getMatchingStacks()) {
+                            SoldererManager.SoldererRecipe theRecipe = new SoldererManager.SoldererRecipe(
+                                    pat, additive, board, output.get(0), new InfusionCost(infusion, gold), time);
+                            SoldererOverride.this.add(theRecipe);
+                            if (recipe != null) recipe = theRecipe;
+                        }
                     }
                 }
             }

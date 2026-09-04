@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lykrast.prodigytech.client.gui.GuiInfusion;
-import lykrast.prodigytech.common.init.ModItems;
 import lykrast.prodigytech.common.recipe.Infusion;
 import lykrast.prodigytech.common.recipe.Infusion.InfusionCost;
 import lykrast.prodigytech.common.recipe.SoldererManager.SoldererRecipe;
@@ -21,7 +20,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 
 public class SoldererWrapper implements IRecipeWrapper, ITooltipCallback<ItemStack> {
-    private ItemStack pattern, additive, output;
+    private ItemStack pattern, additive, output, board;
     private final IDrawableAnimated arrow;
     private final IDrawable goldGauge;
     private final InfusionCost cost;
@@ -30,6 +29,7 @@ public class SoldererWrapper implements IRecipeWrapper, ITooltipCallback<ItemSta
     public SoldererWrapper(SoldererRecipe recipe, IGuiHelper guiHelper) {
         pattern = recipe.getPattern();
         additive = recipe.getAdditive();
+        board = recipe.getBoard();
         output = recipe.getOutput();
         cost = recipe.getInfusion();
         time = recipe.getTimeTicks();
@@ -49,7 +49,7 @@ public class SoldererWrapper implements IRecipeWrapper, ITooltipCallback<ItemSta
         inputs.add(cost.getRepresentatives());
 
         inputs.add(Collections.singletonList(additive));
-        inputs.add(Collections.singletonList(new ItemStack(ModItems.circuitPlate)));
+        inputs.add(Collections.singletonList(board));
 
         ingredients.setInputLists(VanillaTypes.ITEM, inputs);
         ingredients.setOutput(VanillaTypes.ITEM, output);
