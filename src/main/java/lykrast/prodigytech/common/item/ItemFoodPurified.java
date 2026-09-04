@@ -3,9 +3,11 @@ package lykrast.prodigytech.common.item;
 import java.util.List;
 import javax.annotation.Nullable;
 import lykrast.prodigytech.common.init.ModItems;
+import lykrast.prodigytech.common.tileentity.TileFoodEnricher;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -61,10 +63,25 @@ public class ItemFoodPurified extends ItemFood {
     }
 
     @Override
+    public EnumRarity getRarity(ItemStack stack) {
+        if (!stack.hasTagCompound()) return EnumRarity.COMMON;
+        if (!(TileFoodEnricher.isValidInput(stack))) return EnumRarity.RARE;
+        float saturation = stack.getTagCompound().getFloat(NBT_SATURATION);
+        if (saturation >= 1.0F) return EnumRarity.UNCOMMON;
+        return EnumRarity.COMMON;
+    }
+
+    @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        String tip =
-                I18n.format(stack.getTranslationKey() + ".tooltip", getHealAmount(stack), getSaturationModifier(stack));
+        String tipBase = TileFoodEnricher.isValidInput(stack)
+                ? "tooltip.prodigytech.purified_food"
+                : "tooltip.prodigytech.purified_food_max";
+        String tip = I18n.format(
+                stack.getTranslationKey() + ".tooltip",
+                I18n.format(tipBase),
+                getHealAmount(stack),
+                getSaturationModifier(stack));
         String[] lines = tip.split("\n");
         for (String s : lines) tooltip.add(TextFormatting.GRAY + s);
     }

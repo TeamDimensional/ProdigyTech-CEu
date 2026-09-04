@@ -46,6 +46,7 @@ public class ProdigyTechJEI implements IModPlugin {
         FuelProcessorCategory.registerRecipes(registry);
         PrimordialisReactorCategory.registerRecipes(registry);
         AtomicReshaperCategory.registerRecipes(registry);
+        FoodPurifierCategory.registerRecipes(registry);
 
         // Catalysts
         registry.addRecipeCatalyst(new ItemStack(ModBlocks.explosionFurnace), ExplosionFurnaceCategory.UID);
@@ -61,6 +62,7 @@ public class ProdigyTechJEI implements IModPlugin {
         registry.addRecipeCatalyst(new ItemStack(ModBlocks.fuelProcessor), FuelProcessorCategory.UID);
         registry.addRecipeCatalyst(new ItemStack(ModBlocks.primordialisReactor), PrimordialisReactorCategory.UID);
         registry.addRecipeCatalyst(new ItemStack(ModBlocks.atomicReshaper), AtomicReshaperCategory.UID);
+        registry.addRecipeCatalyst(new ItemStack(ModBlocks.foodPurifier), FoodPurifierCategory.UID);
 
         // Vanilla catalysts
         registry.addRecipeCatalyst(new ItemStack(ModBlocks.blowerFurnace), VanillaRecipeCategoryUid.SMELTING);
@@ -87,6 +89,7 @@ public class ProdigyTechJEI implements IModPlugin {
         registry.addRecipeClickArea(GuiFuelProcessor.class, 79, 35, 24, 17, FuelProcessorCategory.UID);
         registry.addRecipeClickArea(GuiPrimordialisReactor.class, 77, 35, 62, 16, PrimordialisReactorCategory.UID);
         registry.addRecipeClickArea(GuiAtomicReshaper.class, 67, 35, 48, 17, AtomicReshaperCategory.UID);
+        registry.addRecipeClickArea(GuiFoodPurifier.class, 79, 35, 24, 17, FoodPurifierCategory.UID);
 
         registry.addRecipeClickArea(GuiBlowerFurnace.class, 79, 35, 24, 17, VanillaRecipeCategoryUid.SMELTING);
         registry.addRecipeClickArea(GuiAeroheaterSolid.class, 79, 34, 18, 18, VanillaRecipeCategoryUid.FUEL);
@@ -110,5 +113,6 @@ public class ProdigyTechJEI implements IModPlugin {
         registry.addRecipeCategories(new FuelProcessorCategory(guiHelper));
         registry.addRecipeCategories(new PrimordialisReactorCategory(guiHelper));
         registry.addRecipeCategories(new AtomicReshaperCategory(guiHelper));
+        registry.addRecipeCategories(new FoodPurifierCategory(guiHelper));
     }
 }

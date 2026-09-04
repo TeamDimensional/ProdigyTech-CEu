@@ -2,6 +2,7 @@ package lykrast.prodigytech.common.util;
 
 import lykrast.prodigytech.core.CommonProxy;
 import lykrast.prodigytech.core.ProdigyTech;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
 
 public class Config {
@@ -41,6 +42,7 @@ public class Config {
     public static int foodEnricherFoodIncrease, foodEnricherFoodCap;
     public static float foodEnricherSaturationIncrease, foodEnricherSaturationCap;
     public static float energionGrowthSpeed;
+    public static String[] foodPurifierBlacklist;
 
     // Power gen
     public static int energionDuration, heatCapacitorDuration;
@@ -70,6 +72,20 @@ public class Config {
                 cfg.save();
             }
         }
+    }
+
+    private static String serializeStack(ItemStack stack) {
+        return stack.getItem().getRegistryName() + "@" + stack.getMetadata();
+    }
+
+    public static boolean itemMatches(ItemStack stack, String[] configs) {
+        String serialized = serializeStack(stack);
+        for (String c : configs) {
+            if (c.equals(serialized) || (stack.getMetadata() == 0 && (c + "@0").equals(serialized))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void initGeneralConfig(Configuration cfg) {
@@ -171,6 +187,12 @@ public class Config {
                 300,
                 "The base amount of time (in ticks) that the Food Purifier takes to process an item, most will take much longer\n"
                         + "For reference, Beetroots take 2.2x that time, Rotten Flesh takes 4.8x and Steaks 20.8x");
+        foodPurifierBlacklist = cfg.getStringList(
+                "foodPurifierBlacklist",
+                CATEGORY_MACHINES,
+                new String[] {"prodigytech:purified_food"},
+                "The items that should not be allowed to placed inside Food Purifier. Use for food that stores its information in NBT or elsewhere.\n"
+                        + "The syntax is modid:item_name or modid:item_name@metadata.");
 
         // Solderer
         soldererProcessTime = cfg.getInt(
