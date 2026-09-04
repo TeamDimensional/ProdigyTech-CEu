@@ -168,7 +168,7 @@ public class Infusion {
             if (infusion == null) {
                 return true;
             }
-            if (!infusion.infusion.equals(this.infusion) || this.count < count) {
+            if (!infusion.infusion.equals(this.infusion) || this.count < infusion.amount) {
                 return false;
             }
             if (!simulate) {
