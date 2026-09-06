@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.6] - 2026-09-06
+
+### Tweaks
+- Food Purifier now has a JEI handler
+- Purified Food now displays a tooltip whether it can be increased further
+
+### Modpacks
+- Solderer recipes now support custom circuit boards
+
+### Bugfixes
+- Fixed several issues with the Infusion functionality
+
 ## [1.3.5] - 2026-08-30
 
 ### Modpacks
