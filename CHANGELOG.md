@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.7] - 2026-10-04
+
+### Modpacks
+- Magmatic Aeroheater now can use custom fluids, added through Groovyscript or Crafttweaker, and they can be optionally consumed
+
+### Tweaks
+- Food items giving 0 food points can no longer be input into the Food Purifier
+    - Consequently, fixes an error with JEI handlers if such an item was found
+
 ## [1.3.6] - 2026-09-06
 
 ### Tweaks
