@@ -78,4 +78,14 @@ public class BlockAeroheaterMagmatic extends BlockGeneric implements ITileEntity
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         getTileEntity(worldIn, pos).checkActive();
     }
+
+    @Override
+    public boolean hasComparatorInputOverride(IBlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos) {
+        return getTileEntity(worldIn, pos).getComparatorOutput();
+    }
 }

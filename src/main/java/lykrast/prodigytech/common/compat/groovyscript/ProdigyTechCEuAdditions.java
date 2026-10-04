@@ -10,6 +10,7 @@ public class ProdigyTechCEuAdditions extends ProdigyTech {
     public final Solderer solderer = new SoldererOverride();
     public final AtomicReshaper atomic_reshaper = new AtomicReshaperOverride();
     public final InfusionManager infusions = new InfusionManager();
+    public final MagmaticAeroheater magmatic_aeroheater = new MagmaticAeroheater();
 
     @Override
     public void initialize(GroovyContainer<?> owner) {

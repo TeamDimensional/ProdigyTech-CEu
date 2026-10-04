@@ -3,8 +3,10 @@ package lykrast.prodigytech.common.tileentity;
 import lykrast.prodigytech.common.block.BlockHotAirMachine;
 import lykrast.prodigytech.common.capability.CapabilityHotAir;
 import lykrast.prodigytech.common.capability.HotAirAeroheater;
+import lykrast.prodigytech.common.capability.HotAirProfileAeroheater;
 import lykrast.prodigytech.common.init.ModItems;
 import lykrast.prodigytech.common.util.Config;
+import lykrast.prodigytech.common.util.HeatingProfile;
 import lykrast.prodigytech.common.util.ProdigyInventoryHandler;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -168,39 +170,24 @@ public class TileAeroheaterEnergion extends TileMachineInventory implements ITic
         return super.getCapability(capability, facing);
     }
 
-    private static class HotAir extends HotAirAeroheater {
+    private static class HotAir extends HotAirProfileAeroheater {
         public HotAir() {
-            super(250);
-        }
-
-        @Override
-        protected void resetRaiseClock() {
-            // 3.5 seconds to reach 100 C
-            if (temperature < 100) temperatureClock = 1;
-            // 5 more seconds to reach 125 C
-            else if (temperature < 125) temperatureClock = 4;
-            // 14 more seconds to reach 160 C
-            else if (temperature < 160) temperatureClock = 8;
-            // 26 more seconds to reach 200 C
-            else if (temperature < 200) temperatureClock = 13;
-            // 60 more seconds to reach 250 C
-            else temperatureClock = 24;
-        }
-
-        @Override
-        protected void resetLowerClock() {
-            // Stays at 250-200 for 2.5 seconds
-            if (temperature > 200) temperatureClock = 1;
-            // Stays at 200-160 for 4 seconds
-            else if (temperature > 160) temperatureClock = 2;
-            // Stays at 160-125 for 7 seconds
-            else if (temperature > 125) temperatureClock = 4;
-            // Stays at 125-100 for 10 seconds
-            else if (temperature > 100) temperatureClock = 8;
-            // Stays at 100-80 for 12 seconds
-            else if (temperature > 80) temperatureClock = 12;
-            // Fully cools (80-30) in 35 seconds
-            else temperatureClock = 14;
+            super(
+                    new HeatingProfile.Builder()
+                            .point(100, 1)
+                            .point(125, 4)
+                            .point(160, 8)
+                            .point(200, 13)
+                            .point(250, 24)
+                            .build(),
+                    new HeatingProfile.Builder()
+                            .point(80, 14)
+                            .point(100, 12)
+                            .point(125, 8)
+                            .point(160, 4)
+                            .point(200, 2)
+                            .point(250, 1)
+                            .build());
         }
     }
 }

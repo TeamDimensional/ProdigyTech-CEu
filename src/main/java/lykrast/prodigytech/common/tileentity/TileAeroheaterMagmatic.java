@@ -2,10 +2,11 @@ package lykrast.prodigytech.common.tileentity;
 
 import lykrast.prodigytech.common.block.BlockAeroheaterMagmatic;
 import lykrast.prodigytech.common.capability.CapabilityHotAir;
-import lykrast.prodigytech.common.capability.HotAirAeroheater;
-import net.minecraft.block.Block;
+import lykrast.prodigytech.common.capability.HotAirProfileAeroheater;
+import lykrast.prodigytech.common.recipe.MagmaticAeroheaterManager;
+import lykrast.prodigytech.common.recipe.MagmaticAeroheaterManager.MagmaticAeroheaterRecipe;
+import lykrast.prodigytech.common.util.WorldUtil;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -13,69 +14,118 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 
-public class TileAeroheaterMagmatic extends TileEntity implements ITickable {
-    private HotAirAeroheater hotAir;
-    private boolean active;
-    private boolean checkNextTick = false;
+public class TileAeroheaterMagmatic extends TileEntity implements ITickable, IProcessing {
+    private HotAir hotAir;
+    private MagmaticAeroheaterRecipe currentRecipe, lastRecipe;
+    private boolean checkNextTick = true;
+    private int residualHeat = 0;
 
     public TileAeroheaterMagmatic() {
         hotAir = new HotAir();
-        active = false;
-        checkNextTick = true;
+        currentRecipe = lastRecipe = null;
+    }
+
+    private boolean recipeNeedsUpdate(boolean shouldTryToConsumeFluid) {
+        BlockPos belowPos = pos.down();
+        FluidStack stackBelow = WorldUtil.drainFluidBlock(world, belowPos, false);
+        Fluid fluid = stackBelow == null ? null : stackBelow.getFluid();
+        MagmaticAeroheaterRecipe newRecipe = MagmaticAeroheaterManager.getRecipe(fluid);
+
+        if (newRecipe != null) {
+            residualHeat = 0;
+            currentRecipe = newRecipe;
+            hotAir.setRecipe(newRecipe);
+        } else if (residualHeat > 0) {
+            residualHeat--;
+            return false;
+        } else {
+            hotAir.setRecipe(null);
+            currentRecipe = null;
+            return true;
+        }
+
+        if (currentRecipe != null) {
+            if (!shouldTryToConsumeFluid
+                    || currentRecipe.consumptionChance <= 0.0F
+                    || world.rand.nextFloat() > currentRecipe.consumptionChance) {
+                return false;
+            }
+
+            residualHeat = currentRecipe.residualHeatDuration;
+            lastRecipe = currentRecipe;
+            currentRecipe = null;
+            if (!world.isRemote) {
+                world.setBlockState(belowPos, lastRecipe.outputBlock);
+            }
+            return true;
+        }
+        return false;
     }
 
     public void checkActive() {
-        Block below = world.getBlockState(pos.down()).getBlock();
-        if (below == Blocks.LAVA || below == Blocks.FLOWING_LAVA) active = true;
-        else active = false;
+        if (recipeNeedsUpdate(false)) {
+            markDirty();
+        }
     }
 
     @Override
     public void update() {
-        boolean flag = world.getBlockState(pos).getValue(BlockAeroheaterMagmatic.ACTIVE);
-        boolean flag1 = false;
+        if (world.isRemote) {
+            return;
+        }
 
-        if (!this.world.isRemote) {
-            if (checkNextTick) {
-                checkNextTick = false;
-                checkActive();
-            }
+        boolean isActive = world.getBlockState(pos).getValue(BlockAeroheaterMagmatic.ACTIVE);
+        boolean activityChanged = false;
+        boolean recipeChanged = false;
 
-            if (active) hotAir.raiseTemperature();
-            else hotAir.lowerTemperature();
-
-            if (flag != active) {
-                flag1 = true;
-                BlockAeroheaterMagmatic.setState(active, this.world, this.pos);
+        if (this.world.getWorldTime() % 20 == 0 || checkNextTick) {
+            recipeChanged = recipeNeedsUpdate(true);
+            checkNextTick = false;
+        }
+        if (residualHeat > 0) {
+            residualHeat--;
+            if (residualHeat == 0) {
+                currentRecipe = null;
+                activityChanged = true;
             }
         }
 
-        if (flag1) {
+        if (isActive != (currentRecipe != null)) {
+            activityChanged = true;
+            BlockAeroheaterMagmatic.setState(currentRecipe != null, this.world, this.pos);
+        }
+        hotAir.tick();
+
+        if (activityChanged || recipeChanged) {
             this.markDirty();
         }
     }
 
     @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
-        return (oldState.getBlock() != newState.getBlock());
-    }
-
-    @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        active = compound.getBoolean("Active");
         hotAir.deserializeNBT(compound.getCompoundTag("HotAir"));
+        residualHeat = compound.getInteger("ResidualHeat");
         checkNextTick = true;
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
-        compound.setBoolean("Active", active);
         compound.setTag("HotAir", hotAir.serializeNBT());
+        compound.setInteger("ResidualHeat", residualHeat);
 
         return compound;
+    }
+
+    @Override
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
+        // Only refresh (invalidate/destroy the TE) if the actual block type changes.
+        // Return false if it's just a metadata/state property change for the same block.
+        return oldState.getBlock() != newState.getBlock();
     }
 
     @Override
@@ -91,21 +141,48 @@ public class TileAeroheaterMagmatic extends TileEntity implements ITickable {
         return super.getCapability(capability, facing);
     }
 
-    private static class HotAir extends HotAirAeroheater {
-        public HotAir() {
-            super(80);
+    public int getComparatorOutput() {
+        if (residualHeat > 0) {
+            return 2;
+        } else if (currentRecipe != null) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public boolean isProcessing() {
+        return residualHeat > 0;
+    }
+
+    @Override
+    public int getProgressLeft() {
+        return residualHeat;
+    }
+
+    @Override
+    public int getMaxProgress() {
+        return lastRecipe == null ? 1 : lastRecipe.residualHeatDuration;
+    }
+
+    @Override
+    public boolean invertDisplay() {
+        return true;
+    }
+
+    private static class HotAir extends HotAirProfileAeroheater {
+        HotAir() {
+            super();
+            defaultCoolingSpeed = MagmaticAeroheaterManager.DEFAULT_COOLING;
         }
 
-        @Override
-        protected void resetRaiseClock() {
-            // 10 seconds to reach 80 C (when Draft Furnace starts working)
-            temperatureClock = 4;
-        }
-
-        @Override
-        protected void resetLowerClock() {
-            // 20 seconds to cool down fully
-            temperatureClock = 8;
+        void setRecipe(MagmaticAeroheaterRecipe recipe) {
+            if (recipe == null) {
+                stopHeating();
+            } else {
+                setHeatingProfile(recipe.heatingProfile, recipe.coolingProfile);
+            }
         }
     }
 }

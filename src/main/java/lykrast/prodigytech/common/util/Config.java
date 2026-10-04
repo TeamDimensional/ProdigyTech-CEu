@@ -38,7 +38,7 @@ public class Config {
     public static int soldererCapacity, atomicReshaperCapacity;
     public static int primordialisReactorRequiredInput;
     public static int tartaricStokerTime;
-    public static boolean incineratorJEI;
+    public static boolean incineratorJEI, magmaticAeroheaterJEI;
     public static int foodEnricherFoodIncrease, foodEnricherFoodCap;
     public static float foodEnricherSaturationIncrease, foodEnricherSaturationCap;
     public static float energionGrowthSpeed;
@@ -383,6 +383,8 @@ public class Config {
                 20,
                 1728000,
                 "The time (in ticks) a fully charged Heat Capacitor lasts");
+        magmaticAeroheaterJEI = cfg.getBoolean(
+                "magmaticAeroheaterJEI", CATEGORY_POWER, false, "Show the Magmatic Aeroheater recipes in JEI");
 
         // -----------
         // Automation

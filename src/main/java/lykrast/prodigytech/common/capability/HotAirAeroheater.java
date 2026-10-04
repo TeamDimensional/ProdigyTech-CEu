@@ -2,6 +2,9 @@ package lykrast.prodigytech.common.capability;
 
 import net.minecraft.nbt.NBTTagCompound;
 
+/**
+ * Deprecated class. HotAirProfileAeroheater should be used instead.
+ */
 public abstract class HotAirAeroheater extends HotAirChangeable {
     protected int temperatureClock, maxTemperature;
 
@@ -30,8 +33,10 @@ public abstract class HotAirAeroheater extends HotAirChangeable {
         }
     }
 
+    @Deprecated
     protected abstract void resetRaiseClock();
 
+    @Deprecated
     protected abstract void resetLowerClock();
 
     @Override

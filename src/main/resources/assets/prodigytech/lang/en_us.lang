@@ -260,6 +260,11 @@ container.prodigytech.jei.ptreshaper.chance=Chance: %d%%
 container.prodigytech.jei.ptreshaper.chance.low=Chance: < 1%%
 container.prodigytech.jei.ptincinerator.any_item=Accepts any item
 container.prodigytech.jei.base_time=Base time: %d ticks
+container.prodigytech.jei.average_time=Average time: %d ticks
+container.prodigytech.jei.ptmagmaticaeroheater=Magmatic Aeroheater
+container.prodigytech.jei.aeroheater_temperature=Heats up to %d°C
+container.prodigytech.jei.residual_time=Residual heat: %d ticks
+container.prodigytech.jei.permanent_heat_source=Fluid is not consumed
 
 #----------------------------
 #Advancements
@@ -325,3 +330,12 @@ groovyscript.wiki.prodigytech.infusion.naming.value=Configures custom naming for
 groovyscript.wiki.prodigytech.infusion.machines.value=The machines that this infusion can be used in
 groovyscript.wiki.prodigytech_ceu.machine_types=the infusion types refer to valid machines (currently `solderer` and `atomic_reshaper`)
 groovyscript.wiki.prodigytech.infusion.unlocalizedName.value=The base unlocalized name of the infusion
+groovyscript.wiki.prodigytech.magmatic_aeroheater.title=Magmatic Aeroheater
+groovyscript.wiki.prodigytech.magmatic_aeroheater.description=Generates Hot Air from an input fluid placed underneath. Optionally has a chance to consume the fluid every tick, turning it into an output BlockState
+groovyscript.wiki.prodigytech.magmatic_aeroheater.cooling.value=Configures how quickly Aeroheater will cool down once the fluid is removed (default 1 C per 8 ticks). Can be used multiple times to configure cooling speeds at different temperature points
+groovyscript.wiki.prodigytech.magmatic_aeroheater.heating.value=Configures how quickly Aeroheater will heat up (default 1 C per 4 ticks), and how far this fluid can heat it up. Can be used multiple times to configure heating speeds at different temperature points
+groovyscript.wiki.prodigytech.magmatic_aeroheater.outputBlock.value=Sets the block that will replace the fluid after the recipe is done
+groovyscript.wiki.prodigytech_ceu.magmatic_recipe_nonpermanent=only has an effect if the recipe has an output block
+groovyscript.wiki.prodigytech.magmatic_aeroheater.residualHeat.value=Sets the amount of ticks Magmatic Aeroheater will still heat up after the fluid is consumed
+groovyscript.wiki.prodigytech.magmatic_aeroheater.consumptionChance.value=Sets the chance to consume the fluid every second
+groovyscript.wiki.prodigytech.magmatic_aeroheater.removeRecipe=Remove a recipe for a given fluid

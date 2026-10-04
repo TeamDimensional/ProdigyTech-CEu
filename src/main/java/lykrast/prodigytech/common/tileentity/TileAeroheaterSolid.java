@@ -3,6 +3,8 @@ package lykrast.prodigytech.common.tileentity;
 import lykrast.prodigytech.common.block.BlockHotAirMachine;
 import lykrast.prodigytech.common.capability.CapabilityHotAir;
 import lykrast.prodigytech.common.capability.HotAirAeroheater;
+import lykrast.prodigytech.common.capability.HotAirProfileAeroheater;
+import lykrast.prodigytech.common.util.HeatingProfile;
 import lykrast.prodigytech.common.util.ProdigyInventoryHandler;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
@@ -174,38 +176,23 @@ public class TileAeroheaterSolid extends TileMachineInventory implements ITickab
         return super.getCapability(capability, facing);
     }
 
-    private static class HotAir extends HotAirAeroheater {
+    private static class HotAir extends HotAirProfileAeroheater {
         public HotAir() {
-            super(200);
-        }
-
-        @Override
-        protected void resetRaiseClock() {
-            // 5 seconds to reach 80 C (when Blower Furnace starts working)
-            if (temperature < 80) temperatureClock = 2;
-            // 10 more seconds to reach 100 C (Blower Furnace reaches Furnace speed and 2 can get fueled
-            // at once)
-            else if (temperature < 100) temperatureClock = 10;
-            // 30 more seconds to reach 125 C (3 Blower Furnaces at once)
-            else if (temperature < 125) temperatureClock = 24;
-            // 70 more seconds to reach 160 C (4 Blower Furnaces at once)
-            else if (temperature < 160) temperatureClock = 40;
-            // 120 more seconds to reach 200 C (5 Blower Furnaces at once)
-            else temperatureClock = 60;
-        }
-
-        @Override
-        protected void resetLowerClock() {
-            // Stays at 4+ furnaces (200-160) for 4 seconds
-            if (temperature > 160) temperatureClock = 2;
-            // Stays at 3+ furnaces (160-125) for 7 seconds
-            else if (temperature > 125) temperatureClock = 4;
-            // Stays at 2+ furnaces (125-100) for 10 seconds
-            else if (temperature > 100) temperatureClock = 8;
-            // Stays at 1+ furnaces (100-80) for 15 seconds
-            else if (temperature > 80) temperatureClock = 15;
-            // Fully cools (80-30) in 50 seconds
-            else temperatureClock = 20;
+            super(
+                    new HeatingProfile.Builder()
+                            .point(80, 2)
+                            .point(100, 10)
+                            .point(125, 24)
+                            .point(160, 40)
+                            .point(200, 60)
+                            .build(),
+                    new HeatingProfile.Builder()
+                            .point(80, 20)
+                            .point(100, 15)
+                            .point(125, 8)
+                            .point(160, 4)
+                            .point(200, 2)
+                            .build());
         }
     }
 }

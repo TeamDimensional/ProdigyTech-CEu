@@ -47,6 +47,7 @@ public class ProdigyTechJEI implements IModPlugin {
         PrimordialisReactorCategory.registerRecipes(registry);
         AtomicReshaperCategory.registerRecipes(registry);
         FoodPurifierCategory.registerRecipes(registry);
+        if (Config.magmaticAeroheaterJEI) MagmaticAeroheaterCategory.registerRecipes(registry);
 
         // Catalysts
         registry.addRecipeCatalyst(new ItemStack(ModBlocks.explosionFurnace), ExplosionFurnaceCategory.UID);
@@ -63,6 +64,8 @@ public class ProdigyTechJEI implements IModPlugin {
         registry.addRecipeCatalyst(new ItemStack(ModBlocks.primordialisReactor), PrimordialisReactorCategory.UID);
         registry.addRecipeCatalyst(new ItemStack(ModBlocks.atomicReshaper), AtomicReshaperCategory.UID);
         registry.addRecipeCatalyst(new ItemStack(ModBlocks.foodPurifier), FoodPurifierCategory.UID);
+        if (Config.magmaticAeroheaterJEI)
+            registry.addRecipeCatalyst(new ItemStack(ModBlocks.aeroheaterMagmatic), MagmaticAeroheaterCategory.UID);
 
         // Vanilla catalysts
         registry.addRecipeCatalyst(new ItemStack(ModBlocks.blowerFurnace), VanillaRecipeCategoryUid.SMELTING);
@@ -114,5 +117,6 @@ public class ProdigyTechJEI implements IModPlugin {
         registry.addRecipeCategories(new PrimordialisReactorCategory(guiHelper));
         registry.addRecipeCategories(new AtomicReshaperCategory(guiHelper));
         registry.addRecipeCategories(new FoodPurifierCategory(guiHelper));
+        if (Config.magmaticAeroheaterJEI) registry.addRecipeCategories(new MagmaticAeroheaterCategory(guiHelper));
     }
 }
