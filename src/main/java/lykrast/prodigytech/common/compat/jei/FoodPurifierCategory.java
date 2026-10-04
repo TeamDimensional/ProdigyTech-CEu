@@ -2,7 +2,7 @@ package lykrast.prodigytech.common.compat.jei;
 
 import java.util.ArrayList;
 import java.util.List;
-import lykrast.prodigytech.common.util.Config;
+import lykrast.prodigytech.common.tileentity.TileFoodPurifier;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.gui.IGuiItemStackGroup;
@@ -41,7 +41,7 @@ public class FoodPurifierCategory extends ProdigyCategory<FoodPurifierWrapper> {
                 NonNullList<ItemStack> stacks = NonNullList.create();
                 i.getSubItems(CreativeTabs.SEARCH, stacks);
                 for (ItemStack stack : stacks) {
-                    if (!Config.itemMatches(stack, Config.foodPurifierBlacklist)) {
+                    if (TileFoodPurifier.isValidInput(stack)) {
                         list.add(new FoodPurifierWrapper(guiHelper, stack));
                     }
                 }

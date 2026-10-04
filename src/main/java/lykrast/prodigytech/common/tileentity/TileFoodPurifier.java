@@ -12,7 +12,11 @@ public class TileFoodPurifier extends TileHotAirMachineSimple {
     // Recipe functions
     public static boolean isValidInput(ItemStack stack) {
         Item item = stack.getItem();
-        return item instanceof ItemFood && !Config.itemMatches(stack, Config.foodPurifierBlacklist);
+        if (!(item instanceof ItemFood) || Config.itemMatches(stack, Config.foodPurifierBlacklist)) {
+            return false;
+        }
+        ItemFood food = (ItemFood) stack.getItem();
+        return food.getHealAmount(stack) > 0;
     }
 
     public static int getProcessTime(ItemStack stack) {
