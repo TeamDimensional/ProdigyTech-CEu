@@ -14,10 +14,10 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.oredict.OreDictionary;
 
 public class IncineratorCategory extends ProdigyCategory<IncineratorWrapper> {
     public static final String UID = "ptincinerator";
@@ -43,10 +43,15 @@ public class IncineratorCategory extends ProdigyCategory<IncineratorWrapper> {
                 false);
 
         allItems = new ArrayList<>();
-
-        for (Item i : ForgeRegistries.ITEMS) {
-            allItems.add(new ItemStack(i, 1, OreDictionary.WILDCARD_VALUE));
-        }
+        // Instead of adding all items, just cycle over items that are likely to be used here
+        allItems.add(new ItemStack(Item.getItemFromBlock(Blocks.STONE)));
+        allItems.add(new ItemStack(Item.getItemFromBlock(Blocks.COBBLESTONE)));
+        allItems.add(new ItemStack(Item.getItemFromBlock(Blocks.SAND)));
+        allItems.add(new ItemStack(Item.getItemFromBlock(Blocks.GRAVEL)));
+        allItems.add(new ItemStack(Item.getItemFromBlock(Blocks.PLANKS)));
+        allItems.add(new ItemStack(Item.getItemFromBlock(Blocks.DIRT)));
+        allItems.add(new ItemStack(Items.STICK));
+        allItems.add(new ItemStack(Items.SNOWBALL));
     }
 
     @Override
