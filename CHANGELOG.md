@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.8] - 2026-10-18
+
+### Config
+- Added an option to disallow Food Purifier to go over the Food Enricher's saturation cap
+
+### Performance
+- Fixed a delay when opening the Incinerator's JEI tab
+
 ## [1.3.7] - 2026-10-04
 
 ### Modpacks
