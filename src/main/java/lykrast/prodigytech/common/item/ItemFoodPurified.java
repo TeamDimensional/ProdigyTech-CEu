@@ -4,6 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import lykrast.prodigytech.common.init.ModItems;
 import lykrast.prodigytech.common.tileentity.TileFoodEnricher;
+import lykrast.prodigytech.common.util.Config;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
@@ -44,10 +45,14 @@ public class ItemFoodPurified extends ItemFood {
         return stack;
     }
 
+    public static float capSaturation(float saturation) {
+        return Config.foodPurifierIsCapped ? Math.min(saturation, Config.foodEnricherSaturationCap) : saturation;
+    }
+
     public static ItemStack make(ItemStack stack) {
         // Assume the item is food
         ItemFood food = (ItemFood) stack.getItem();
-        return make(food.getHealAmount(stack), food.getSaturationModifier(stack));
+        return make(food.getHealAmount(stack), capSaturation(food.getSaturationModifier(stack)));
     }
 
     @Override

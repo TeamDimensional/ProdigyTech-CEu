@@ -43,6 +43,7 @@ public class Config {
     public static float foodEnricherSaturationIncrease, foodEnricherSaturationCap;
     public static float energionGrowthSpeed;
     public static String[] foodPurifierBlacklist;
+    public static boolean foodPurifierIsCapped;
 
     // Power gen
     public static int energionDuration, heatCapacitorDuration;
@@ -193,6 +194,11 @@ public class Config {
                 new String[] {"prodigytech:purified_food"},
                 "The items that should not be allowed to placed inside Food Purifier. Use for food that stores its information in NBT or elsewhere.\n"
                         + "The syntax is modid:item_name or modid:item_name@metadata.");
+        foodPurifierIsCapped = cfg.getBoolean(
+                "foodPurifierIsCapped",
+                CATEGORY_MACHINES,
+                false,
+                "If true, Food Purifier cannot output items with more saturation than Food Enricher's cap");
 
         // Solderer
         soldererProcessTime = cfg.getInt(

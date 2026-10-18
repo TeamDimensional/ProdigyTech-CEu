@@ -23,8 +23,9 @@ public class TileFoodPurifier extends TileHotAirMachineSimple {
         // Assumes it is a valid input
         // Formula is (food restored + saturation restored) * config time
         ItemFood food = (ItemFood) stack.getItem();
-        return (int)
-                (food.getHealAmount(stack) * (1 + 2 * food.getSaturationModifier(stack)) * Config.foodPurifierBaseTime);
+        return (int) (food.getHealAmount(stack)
+                * (1 + 2 * ItemFoodPurified.capSaturation(food.getSaturationModifier(stack)))
+                * Config.foodPurifierBaseTime);
     }
 
     // Tile stuff
